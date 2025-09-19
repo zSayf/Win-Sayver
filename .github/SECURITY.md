@@ -127,8 +127,6 @@ We appreciate the security research community's efforts. Security researchers wh
 
 ## Contact Information
 
-- **Security Email**: security@winsayver.com
-- **General Support**: contact@winsayver.com
 - **Project Repository**: https://github.com/zSayf/Win-Sayver
 
 ---
