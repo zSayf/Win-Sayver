@@ -273,39 +273,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ---
 
-## 📞 Support & Community
-
-- 📧 **Email**: support@winsayver.com
-- 🐛 **Issues**: [GitHub Issues](https://github.com/zSayf/Win-Sayver/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/zSayf/Win-Sayver/discussions)
-- 📖 **Wiki**: [Project Wiki](https://github.com/zSayf/Win-Sayver/wiki)
-- 📱 **Social**: [@WinSayver](https://twitter.com/winsayver)
-
-### 🆘 **Getting Help**
-1. Check the [documentation](docs/) and [FAQ](docs/faq.md)
-2. Search [existing issues](https://github.com/zSayf/Win-Sayver/issues)
-3. Join our [community discussions](https://github.com/zSayf/Win-Sayver/discussions)
-4. Create a [new issue](https://github.com/zSayf/Win-Sayver/issues/new) with details
-
----
-
-## 🎯 Roadmap
-
-### 🔮 **Upcoming Features**
-- **Plugin Architecture**: Extensible troubleshooting modules
-- **Cloud Sync**: Cross-device solution sharing
-- **Advanced Analytics**: ML-powered pattern recognition
-- **Enterprise Dashboard**: Multi-system management
-- **Mobile Companion**: iOS/Android remote diagnostics
-
-### 📈 **Performance Goals**
-- **Sub-3 Second Analysis**: Further optimization for faster results
-- **Offline Mode**: Local AI model integration for privacy
-- **Batch Processing**: Multiple system analysis capabilities
-- **Real-time Monitoring**: Continuous system health tracking
-
----
-
 <div align="center">
 
 **⭐ Star this repository if Win Sayver helped solve your Windows issues! ⭐**
