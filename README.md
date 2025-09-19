@@ -84,23 +84,7 @@ Win Sayver is a **production-ready, AI-powered Windows troubleshooting assistant
 
 ### ⚡ Installation Methods
 
-#### **Method 1: One-Click Installer (Recommended)**
-```batch
-# Download and run the automated installer
-curl -O https://raw.githubusercontent.com/zSayf/Win-Sayver/main/run_win_sayver.bat
-run_win_sayver.bat
-```
-
-#### **Method 2: Python Package (pip)**
-```bash
-# Install from PyPI
-pip install win-sayver
-
-# Run the application
-win-sayver
-```
-
-#### **Method 3: From Source**
+#### **Method : From Source**
 ```bash
 # Clone the repository
 git clone https://github.com/zSayf/Win-Sayver.git
@@ -137,30 +121,6 @@ python main_gui.py
 5. **🤖 Get AI-powered solutions**
    - Click "Start Analysis" for intelligent troubleshooting
    - Receive step-by-step solutions with confidence scoring
-
----
-
-## 📖 Documentation
-
-### 📚 **User Guides**
-- [🚀 Quick Start Guide](docs/quick-start.md)
-- [⚙️ Configuration Guide](docs/configuration.md)
-- [🔧 Troubleshooting Guide](docs/troubleshooting.md)
-- [🔒 Security & Privacy](docs/security.md)
-- [🎨 Theme Customization](docs/themes.md)
-
-### 👨‍💻 **Developer Documentation**
-- [🏗️ Architecture Overview](docs/architecture.md)
-- [🔌 API Reference](docs/api-reference.md)
-- [🧪 Testing Guide](docs/testing.md)
-- [🤝 Contributing Guidelines](CONTRIBUTING.md)
-- [📋 Coding Standards](RULTE.md)
-
-### 📋 **Project Information**
-- [📊 Development Phases](development-phases.md)
-- [📝 Project Requirements](project-requirements.md)
-- [🏗️ Software Specifications](software-specifications.md)
-- [📈 Enhancement Summary](ENHANCEMENT_SUMMARY.md)
 
 ---
 
