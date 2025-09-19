@@ -182,17 +182,20 @@ python main_gui.py
 
 <div align="center">
 
-### Main Application Interface
+### 🏠 Main Application Interface
 *Modern PyQt6 desktop interface with tabbed layout and professional styling*
 
-### AI Analysis in Progress
-*Real-time progress tracking with thinking process visualization*
+![Home Tab](https://github.com/zSayf/Win-Sayver/blob/main/Assests/Home%20tab.png)
 
-### System Information Dashboard
-*Comprehensive system analysis with responsive card-based layout*
+### ⚙️ Settings & Configuration
+*Comprehensive settings panel with theme customization and API configuration*
 
-### Image Validation System
-*Enterprise-grade image processing with security scanning*
+![Settings Tab](https://github.com/zSayf/Win-Sayver/blob/main/Assests/Settings%20Tab.png)
+
+### 🤖 AI Analysis Results
+*Intelligent troubleshooting results with step-by-step solutions and confidence scoring*
+
+![Analysis Results](https://github.com/zSayf/Win-Sayver/blob/main/Assests/Result.png)
 
 </div>
 
