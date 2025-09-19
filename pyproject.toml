@@ -9,10 +9,10 @@ description = "AI-Powered Windows Troubleshooting Assistant with Google Gemini 2
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "Win Sayver Team", email = "contact@winsayver.com"}
+    {name = "Win Sayver Team", email = "https://github.com/zSayf"}
 ]
 maintainers = [
-    {name = "Win Sayver Team", email = "contact@winsayver.com"}
+    {name = "Win Sayver Team", email = "https://github.com/zSayf"}
 ]
 keywords = [
     "windows", "troubleshooting", "ai", "gemini", "diagnostics", 
