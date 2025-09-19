@@ -1,0 +1,147 @@
+# Win Sayver - Package Manifest
+# =============================
+# This file specifies which additional files to include in the distribution package
+
+# Include essential documentation files
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+
+# Include project documentation
+include project-requirements.md
+include software-specifications.md
+include development-phases.md
+include ENHANCEMENT_SUMMARY.md
+include GEMINI_2_5_PRO_IMPLEMENTATION.md
+include poc-implementation-plan.md
+
+# Include coding standards and rules
+include RULTE.md
+
+# Include installation and run scripts
+include run_win_sayver.bat
+
+# Include requirements files
+include requirements-dev.txt
+recursive-include win_sayver_poc *.txt
+
+# Include all Python source files
+recursive-include win_sayver_poc *.py
+
+# Include configuration files
+recursive-include win_sayver_poc *.ini
+recursive-include win_sayver_poc *.cfg
+recursive-include win_sayver_poc *.conf
+
+# Include data files and templates
+recursive-include win_sayver_poc *.json
+recursive-include win_sayver_poc *.yaml
+recursive-include win_sayver_poc *.yml
+
+# Include documentation files in subdirectories
+recursive-include win_sayver_poc *.md
+recursive-include win_sayver_poc *.rst
+
+# Include image and icon files
+recursive-include assets *.png
+recursive-include assets *.jpg
+recursive-include assets *.jpeg
+recursive-include assets *.ico
+recursive-include assets *.svg
+
+# Include web assets if present
+recursive-include assets *.css
+recursive-include assets *.js
+recursive-include assets *.html
+
+# Include template files
+recursive-include templates *.html
+recursive-include templates *.txt
+recursive-include templates *.json
+
+# Include test data (but not test files themselves)
+recursive-include tests *.json
+recursive-include tests *.yaml
+recursive-include tests *.yml
+recursive-include tests *.txt
+
+# Include database schema files
+recursive-include win_sayver_poc *.sql
+
+# Include Windows-specific files
+recursive-include win_sayver_poc *.bat
+recursive-include win_sayver_poc *.cmd
+recursive-include win_sayver_poc *.ps1
+
+# Exclude compiled Python files
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.pyd
+global-exclude __pycache__
+
+# Exclude development and testing artifacts
+global-exclude .pytest_cache
+global-exclude .coverage
+global-exclude htmlcov
+global-exclude .tox
+global-exclude .mypy_cache
+
+# Exclude IDE and editor files
+global-exclude .vscode
+global-exclude .idea
+global-exclude *.swp
+global-exclude *.swo
+global-exclude *~
+
+# Exclude OS-generated files
+global-exclude .DS_Store
+global-exclude Thumbs.db
+global-exclude desktop.ini
+
+# Exclude build artifacts
+global-exclude build
+global-exclude dist
+global-exclude *.egg-info
+
+# Exclude virtual environments
+global-exclude venv
+global-exclude env
+global-exclude .env
+
+# Exclude sensitive configuration files
+global-exclude .security_key
+global-exclude .encrypted_config
+global-exclude *.key
+global-exclude api_key.txt
+global-exclude config.ini
+global-exclude settings.ini
+
+# Exclude log files
+global-exclude *.log
+global-exclude logs
+
+# Exclude temporary files
+global-exclude temp
+global-exclude tmp
+global-exclude *.tmp
+global-exclude *.temp
+
+# Exclude Git files
+global-exclude .git
+global-exclude .gitignore
+global-exclude .gitattributes
+
+# Exclude cache files
+global-exclude cache
+global-exclude .cache
+global-exclude *.cache
+
+# Exclude database files (they should be created at runtime)
+global-exclude *.db
+global-exclude *.sqlite
+global-exclude *.sqlite3
+
+# Exclude analysis results (user data)
+global-exclude system_specs.json
+global-exclude analysis_results

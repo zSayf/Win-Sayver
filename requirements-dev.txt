@@ -1,0 +1,111 @@
+# Win Sayver - Development Dependencies
+# ===================================
+
+# Testing Framework
+pytest>=7.4.0                     # Testing framework
+pytest-cov>=4.1.0                 # Coverage reporting
+pytest-qt>=4.2.0                  # PyQt6 testing support
+pytest-mock>=3.11.0               # Mocking utilities
+pytest-xvfb>=3.0.0                # Virtual display for GUI testing
+pytest-timeout>=2.1.0             # Test timeout handling
+
+# Code Quality and Linting
+flake8>=6.0.0                     # Python linting
+black>=23.0.0                     # Code formatting
+isort>=5.12.0                     # Import sorting
+mypy>=1.5.0                       # Static type checking
+pre-commit>=3.3.0                 # Git hooks for code quality
+bandit>=1.7.5                     # Security linting
+
+# Type Stubs for Better Type Checking
+types-requests>=2.31.0            # Type stubs for requests
+types-Pillow>=10.0.0              # Type stubs for Pillow
+types-pywin32>=306.0.0            # Type stubs for pywin32
+
+# Documentation
+pdoc3>=0.10.0                     # API documentation generation
+sphinx>=7.1.0                     # Documentation framework
+sphinx-rtd-theme>=1.3.0           # Read the Docs theme
+myst-parser>=2.0.0                # Markdown support for Sphinx
+
+# Build and Distribution
+build>=0.10.0                     # Build tool for Python packages
+wheel>=0.41.0                     # Wheel format for distribution
+twine>=4.0.2                      # PyPI package upload tool
+setuptools>=68.0.0                # Package setup and installation
+
+# Development Utilities
+ipython>=8.14.0                   # Enhanced interactive Python shell
+ipdb>=0.13.13                     # IPython debugger
+rich>=13.4.0                      # Rich text and beautiful formatting
+click>=8.1.0                      # Command line interface creation
+
+# Performance and Profiling
+line-profiler>=4.1.0              # Line-by-line profiling
+memory-profiler>=0.61.0           # Memory usage profiling
+py-spy>=0.3.14                    # Sampling profiler
+
+# Security and Vulnerability Scanning
+safety>=2.3.0                     # Check for known security vulnerabilities
+pip-audit>=2.6.0                  # Audit Python packages for vulnerabilities
+
+# Package Management and Environment
+pip-tools>=7.1.0                  # Dependency management
+virtualenv>=20.24.0               # Virtual environment creation
+tox>=4.6.0                        # Testing across multiple Python versions
+
+# GUI Development and Testing
+PyQt6-stubs>=6.4.2                # Type stubs for PyQt6
+QtPy>=2.3.0                       # Qt abstraction layer
+
+# Code Coverage and Reporting
+coverage[toml]>=7.2.0             # Coverage measurement with TOML support
+codecov>=2.1.13                   # Codecov integration
+
+# Development Server and Hot Reload (for future web features)
+watchdog>=3.0.0                   # File system event monitoring
+
+# Executable Creation
+pyinstaller>=5.13.0               # Create standalone executables
+auto-py-to-exe>=2.36.0            # GUI for PyInstaller
+
+# Additional Development Tools
+rope>=1.9.0                       # Python refactoring library
+autopep8>=2.0.2                   # Automatic PEP 8 formatting
+vulture>=2.9.1                    # Find unused code
+
+# Jupyter Notebook Support (for data analysis and prototyping)
+jupyter>=1.0.0                    # Jupyter notebook
+notebook>=7.0.0                   # Jupyter notebook interface
+ipywidgets>=8.0.0                 # Interactive widgets for Jupyter
+
+# Git Integration
+gitpython>=3.1.32                 # Git repository interaction
+pre-commit-hooks>=4.4.0           # Common pre-commit hooks
+
+# Environment and Configuration Management
+python-dotenv>=1.0.0              # Environment variable management
+pydantic>=2.1.0                   # Data validation and settings management
+
+# Debugging and Development Utilities
+icecream>=2.1.3                   # Better debugging prints
+pudb>=2023.1                      # Full-screen console debugger
+
+# Performance Benchmarking
+pytest-benchmark>=4.0.0           # Performance benchmarking for tests
+
+# Mock and Test Data Generation
+factory-boy>=3.3.0                # Test data generation
+faker>=19.3.0                     # Fake data generation
+
+# API and HTTP Testing
+httpx>=0.24.0                     # Modern HTTP client for testing
+responses>=0.23.0                 # Mock HTTP responses
+
+# Windows-Specific Development Tools
+pywin32>=306                      # Windows API access
+wmi>=1.5.1                        # Windows Management Instrumentation
+
+# Optional: Enhanced shell and terminal experience
+rich-click>=1.6.0                 # Rich formatting for Click
+questionary>=1.10.0               # Beautiful command line prompts
