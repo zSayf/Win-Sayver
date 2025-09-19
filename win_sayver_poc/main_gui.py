@@ -822,7 +822,7 @@ class WinSayverMainWindow(QMainWindow):  # type: ignore
         # Exit action
         exit_action = QAction("E&xit", self)  # type: ignore
         exit_action.setShortcut("Ctrl+Q")
-        exit_action.triggered.connect(self.close)
+        exit_action.triggered.connect(self._on_exit)
         file_menu.addAction(exit_action)  # type: ignore
 
         # Tools menu
@@ -898,6 +898,10 @@ class WinSayverMainWindow(QMainWindow):  # type: ignore
 
         except Exception as e:
             self.logger.warning(f"Error handling AI config change: {e}")
+
+    def _on_exit(self) -> None:
+        """Handle exit action from menu."""
+        self.close()
 
     def _on_theme_changed(self, theme_text: str) -> None:
         """Handle theme selection change."""

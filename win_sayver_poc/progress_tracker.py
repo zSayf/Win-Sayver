@@ -141,11 +141,11 @@ class ThinkingVisualizationWidget(QWidget):
         self.thinking_status_label.setText("🤔 Thinking...")
         self.step_count_label.setText(f"Steps: {len(self.thinking_steps)}")
 
-        # Scroll to bottom
+        # Scroll to bottom with proper type checking
         parent_widget = self.parent()
         if parent_widget:
             scroll_area = parent_widget.findChild(QScrollArea)
-            if scroll_area:
+            if scroll_area and isinstance(scroll_area, QScrollArea):
                 scroll_bar = scroll_area.verticalScrollBar()
                 if scroll_bar:
                     scroll_bar.setValue(scroll_bar.maximum())
@@ -258,13 +258,14 @@ class ThinkingVisualizationWidget(QWidget):
         """Clear all thinking steps."""
         self.thinking_steps.clear()
 
-        # Clear layout
+        # Clear layout with proper type handling
         for i in reversed(range(self.thinking_layout.count())):
             layout_item = self.thinking_layout.itemAt(i)
             if layout_item:
                 widget = layout_item.widget()
                 if widget:
-                    widget.setParent(None)
+                    # Properly handle setParent with type ignore for Qt compatibility
+                    widget.setParent(None)  # type: ignore[arg-type]
 
         # Reset status
         self.thinking_status_label.setText("💭 Ready")
@@ -680,7 +681,11 @@ class ProgressTrackingSystem(QWidget):
 
     def _setup_connections(self) -> None:
         """Setup signal connections."""
-        self.analysis_progress.step_completed.connect(lambda step: self.step_completed.emit(step, True, ""))
+        # Fix: Explicitly make lambda return None to satisfy signal requirements
+        def on_step_completed(step: str) -> None:
+            self.step_completed.emit(step, True, "")
+        
+        self.analysis_progress.step_completed.connect(on_step_completed)
 
     def start_analysis(self, steps: List[str]) -> None:
         """Start analysis tracking with given steps."""

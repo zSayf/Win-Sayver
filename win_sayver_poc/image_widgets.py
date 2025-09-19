@@ -140,7 +140,11 @@ class ImageThumbnail(QFrame):  # type: ignore
             }
         """
         )
-        self.remove_btn.clicked.connect(lambda: self.remove_requested.emit(self.file_path))
+        # Fix: Create proper slot method to ensure None return type
+        def on_remove_clicked() -> None:
+            self.remove_requested.emit(self.file_path)
+        
+        self.remove_btn.clicked.connect(on_remove_clicked)
 
         layout.addWidget(image_container)
 
@@ -524,11 +528,11 @@ class MultiImageDropArea(QWidget):  # type: ignore
 
     def _update_gallery_layout(self) -> None:
         """Update the thumbnail gallery layout."""
-        # Clear existing layout
+        # Clear existing layout with proper type handling
         for i in reversed(range(self.gallery_layout.count())):
             child = self.gallery_layout.itemAt(i).widget()  # type: ignore
             if child:
-                child.setParent(None)
+                child.setParent(None)  # type: ignore[arg-type]
 
         # Add thumbnails in grid layout
         if self.thumbnail_widgets:
