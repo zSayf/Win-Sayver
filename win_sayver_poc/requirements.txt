@@ -5,12 +5,11 @@
 wmi>=1.5.1                    # Windows Management Instrumentation
 psutil>=5.9.0                 # Cross-platform system and process utilities
 
-# AI integration (Official Google GenAI SDK)
-google-genai>=1.0.0          # Official Google Gemini AI API
+# AI integration (Compatible Google GenAI SDK)
+google-generativeai>=0.8.0   # Official Google Gemini AI API
 
-# GUI Framework (Phase 3)
-PyQt6>=6.4.2,<6.5.0        # Professional desktop GUI framework (compatible with tools)
-PyQt6-tools>=6.4.2.3.3      # Development tools for PyQt6 (latest available)
+# GUI Framework
+PyQt6>=6.4.2                 # Professional desktop GUI framework
 
 # Image processing and validation
 Pillow>=10.0.0               # Python Imaging Library for comprehensive image processing
