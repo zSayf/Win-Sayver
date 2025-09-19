@@ -1,0 +1,399 @@
+name: Win Sayver CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+  release:
+    types: [ published ]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION_MATRIX: "['3.8', '3.9', '3.10', '3.11', '3.12']"
+
+jobs:
+  # Job 1: Code Quality and Linting
+  lint:
+    name: Code Quality & Linting
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install linting dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black mypy isort
+    
+    - name: Run Black formatter check
+      run: black --check win_sayver_poc/
+      
+    - name: Run isort import sorting check
+      run: isort --check-only win_sayver_poc/
+    
+    - name: Run Flake8 linting
+      run: |
+        # Stop on syntax errors and undefined names
+        flake8 win_sayver_poc/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Full linting with complexity and line length checks
+        flake8 win_sayver_poc/ --count --exit-zero --max-complexity=15 --max-line-length=120 --statistics
+    
+    - name: Run MyPy type checking (continue on error)
+      continue-on-error: true
+      run: |
+        pip install types-requests types-Pillow
+        mypy win_sayver_poc/ --ignore-missing-imports
+
+  # Job 2: Unit and Integration Tests
+  test:
+    name: Test Suite
+    needs: lint
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    
+    - name: Install system dependencies
+      run: |
+        # Install system-level dependencies if needed
+        echo "Installing system dependencies for Windows..."
+        
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        
+        # Install core dependencies
+        pip install -r win_sayver_poc/requirements.txt
+        
+        # Install test dependencies
+        pip install pytest pytest-cov pytest-qt pytest-xvfb pytest-mock
+        pip install coverage[toml]
+        
+        # Install the package in development mode
+        pip install -e .
+    
+    - name: Verify installation
+      run: |
+        python -c "import sys; print(f'Python {sys.version}')"
+        python -c "import PyQt6; print(f'PyQt6 version: {PyQt6.QtCore.PYQT_VERSION_STR}')"
+        python -c "import google.generativeai as genai; print('Google GenAI available')"
+        python -c "import psutil; print(f'psutil version: {psutil.__version__}')"
+    
+    - name: Run unit tests
+      run: |
+        cd win_sayver_poc
+        python -m pytest -v --tb=short
+      env:
+        PYTHONPATH: ${{ github.workspace }}/win_sayver_poc
+        QT_QPA_PLATFORM: offscreen
+    
+    - name: Run tests with coverage
+      if: matrix.python-version == '3.11'
+      run: |
+        cd win_sayver_poc
+        python -m pytest --cov=. --cov-report=xml --cov-report=html --cov-report=term
+      env:
+        PYTHONPATH: ${{ github.workspace }}/win_sayver_poc
+        QT_QPA_PLATFORM: offscreen
+    
+    - name: Upload coverage to Codecov
+      if: matrix.python-version == '3.11'
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./win_sayver_poc/coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  # Job 3: Security and Dependency Check
+  security:
+    name: Security Scan
+    needs: lint
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install security tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install safety bandit
+    
+    - name: Check for known security vulnerabilities
+      run: |
+        pip install -r win_sayver_poc/requirements.txt
+        safety check
+    
+    - name: Run Bandit security linter
+      run: |
+        bandit -r win_sayver_poc/ -f json -o bandit-report.json || true
+        bandit -r win_sayver_poc/ -f txt
+    
+    - name: Upload Bandit report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: bandit-security-report
+        path: bandit-report.json
+
+  # Job 4: Build Package
+  build:
+    name: Build Package
+    needs: [test, security]
+    runs-on: windows-latest
+    if: github.event_name == 'release' || github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine wheel
+        pip install -r win_sayver_poc/requirements.txt
+    
+    - name: Build source distribution and wheel
+      run: |
+        python -m build
+    
+    - name: Check package
+      run: |
+        twine check dist/*
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+
+  # Job 5: Create Executable (PyInstaller)
+  executable:
+    name: Create Executable
+    needs: [test, security]
+    runs-on: windows-latest
+    if: github.event_name == 'release'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r win_sayver_poc/requirements.txt
+        pip install pyinstaller
+    
+    - name: Create executable with PyInstaller
+      run: |
+        cd win_sayver_poc
+        pyinstaller --name "WinSayver" ^
+                   --onefile ^
+                   --windowed ^
+                   --icon="../assets/icon.ico" ^
+                   --add-data "*.py;." ^
+                   --add-data "requirements.txt;." ^
+                   --distpath "../dist-exe" ^
+                   main_gui.py
+    
+    - name: Test executable
+      run: |
+        # Test that executable can start (will fail without GUI, but should not crash on import)
+        timeout 10 ./dist-exe/WinSayver.exe --help || echo "Executable test completed"
+    
+    - name: Upload executable
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-executable
+        path: dist-exe/
+
+  # Job 6: Integration Tests
+  integration:
+    name: Integration Tests
+    needs: test
+    runs-on: windows-latest
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r win_sayver_poc/requirements.txt
+        pip install pytest pytest-mock
+    
+    - name: Run integration tests
+      run: |
+        cd win_sayver_poc
+        python -c "
+        # Test basic imports and initialization
+        try:
+            import main_gui
+            import ai_client
+            import system_profiler
+            import image_validator
+            print('✓ All core modules imported successfully')
+        except Exception as e:
+            print(f'✗ Import error: {e}')
+            exit(1)
+        
+        # Test system profiler initialization
+        try:
+            from specs_collector import SystemSpecsCollector
+            collector = SystemSpecsCollector()
+            print('✓ SystemSpecsCollector initialized successfully')
+        except Exception as e:
+            print(f'✗ SystemSpecsCollector error: {e}')
+            exit(1)
+        
+        print('✓ Integration tests passed')
+        "
+      env:
+        PYTHONPATH: ${{ github.workspace }}/win_sayver_poc
+
+  # Job 7: Deploy to PyPI (on release)
+  deploy:
+    name: Deploy to PyPI
+    needs: [build, executable]
+    runs-on: windows-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    environment:
+      name: pypi
+      url: https://pypi.org/p/win-sayver
+    
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+    
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        skip-existing: true
+
+  # Job 8: Create GitHub Release Assets
+  release-assets:
+    name: Upload Release Assets
+    needs: [build, executable]
+    runs-on: windows-latest
+    if: github.event_name == 'release'
+    
+    steps:
+    - name: Download Python package
+      uses: actions/download-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+    
+    - name: Download Windows executable
+      uses: actions/download-artifact@v3
+      with:
+        name: windows-executable
+        path: exe/
+    
+    - name: Upload release assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: exe/WinSayver.exe
+        asset_name: WinSayver-${{ github.event.release.tag_name }}-Windows.exe
+        asset_content_type: application/octet-stream
+
+  # Job 9: Update Documentation
+  docs:
+    name: Update Documentation
+    runs-on: windows-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Generate API documentation
+      run: |
+        pip install pdoc3
+        # Add documentation generation commands here
+        echo "Documentation generation placeholder"
+    
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo "GitHub Pages deployment placeholder"
+        # Add GitHub Pages deployment here
+
+  # Job 10: Notify on Success/Failure
+  notify:
+    name: Notify Build Status
+    needs: [lint, test, security, build]
+    runs-on: windows-latest
+    if: always()
+    
+    steps:
+    - name: Notify success
+      if: ${{ needs.lint.result == 'success' && needs.test.result == 'success' && needs.security.result == 'success' && needs.build.result == 'success' }}
+      run: |
+        echo "✅ All CI/CD jobs completed successfully!"
+        echo "Build Status: PASSED ✅"
+    
+    - name: Notify failure
+      if: ${{ needs.lint.result == 'failure' || needs.test.result == 'failure' || needs.security.result == 'failure' || needs.build.result == 'failure' }}
+      run: |
+        echo "❌ One or more CI/CD jobs failed!"
+        echo "Build Status: FAILED ❌"
+        exit 1

@@ -1,0 +1,172 @@
+name: 🐛 Bug Report
+description: Create a report to help us improve Win Sayver
+title: "[BUG] "
+labels: ["bug", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a bug! 🐛
+        
+        Please fill out this form completely to help us understand and fix the issue.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Please confirm the following before submitting your bug report
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have checked the documentation and FAQ
+          required: true
+        - label: I am using a supported version of Win Sayver
+          required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Win Sayver Version
+      description: What version of Win Sayver are you using?
+      placeholder: "e.g., v3.1.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: installation
+    attributes:
+      label: Installation Method
+      description: How did you install Win Sayver?
+      options:
+        - pip install win-sayver
+        - Downloaded executable from GitHub releases
+        - Cloned from source and ran directly
+        - Other (please specify in additional context)
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: System Environment
+      description: Please provide your system information
+      placeholder: |
+        - OS: Windows 11 22H2
+        - Python Version: 3.11.5
+        - PyQt6 Version: 6.4.2
+        - Architecture: x64
+        - RAM: 16 GB
+        - Any relevant hardware details
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: Describe what you expected to happen vs. what actually happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Please provide detailed steps to reproduce the issue
+      placeholder: |
+        1. Open Win Sayver
+        2. Click on '...'
+        3. Enter '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: A clear description of what you expected to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: A clear description of what actually happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error Logs
+      description: Please paste any relevant error messages or logs
+      placeholder: |
+        Paste error logs here. You can find logs in:
+        - Console output
+        - %LOCALAPPDATA%\WinSayver\logs\
+        - Application error dialogs
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots to help explain your problem
+      placeholder: You can drag and drop images here
+    validations:
+      required: false
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often does this bug occur?
+      options:
+        - Every time
+        - Sometimes
+        - Rarely
+        - Only once
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Bug Severity
+      description: How severe is this bug?
+      options:
+        - Critical (Application crashes or completely unusable)
+        - High (Major functionality is broken)
+        - Medium (Some functionality is affected)
+        - Low (Minor issue or cosmetic problem)
+    validations:
+      required: true
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround
+      description: Is there a workaround for this issue?
+      placeholder: Describe any workaround you've found
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here
+      placeholder: |
+        - Related issues
+        - Recent changes to your system
+        - Any other relevant information
+    validations:
+      required: false

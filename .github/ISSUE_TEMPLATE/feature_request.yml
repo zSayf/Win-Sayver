@@ -1,0 +1,192 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for Win Sayver
+title: "[FEATURE] "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a feature! ✨
+        
+        We appreciate your ideas for improving Win Sayver. Please provide as much detail as possible.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Please confirm the following before submitting your feature request
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have checked the documentation to see if this feature already exists
+          required: true
+        - label: This feature request is specific to Win Sayver
+          required: true
+
+  - type: dropdown
+    id: feature-type
+    attributes:
+      label: Feature Type
+      description: What type of feature are you requesting?
+      options:
+        - New AI analysis capability
+        - User interface improvement
+        - System integration enhancement
+        - Performance optimization
+        - Security feature
+        - Accessibility improvement
+        - Developer tool/API
+        - Documentation improvement
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? What is the current limitation?
+      placeholder: |
+        Describe the problem or limitation you're experiencing:
+        - What can't you do currently?
+        - What's difficult or inefficient?
+        - What user need is not being met?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your proposed solution in detail
+      placeholder: |
+        Provide a detailed description of your proposed feature:
+        - How would it work?
+        - What would the user interface look like?
+        - How would users interact with it?
+        - What would be the expected behavior?
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: Describe specific use cases where this feature would be valuable
+      placeholder: |
+        Provide specific scenarios where this feature would be used:
+        1. User scenario 1: ...
+        2. User scenario 2: ...
+        3. User scenario 3: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What alternative solutions have you considered?
+      placeholder: |
+        Describe any alternative approaches you've considered:
+        - Other ways to solve the same problem
+        - Existing tools or workflows you currently use
+        - Why those alternatives are not sufficient
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority Level
+      description: How important is this feature to you?
+      options:
+        - Critical (Cannot use Win Sayver effectively without this)
+        - High (Would significantly improve my experience)
+        - Medium (Would be nice to have)
+        - Low (Minor convenience improvement)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: user-base
+    attributes:
+      label: Expected User Base
+      description: Who would benefit from this feature?
+      options:
+        - All users
+        - Power users/IT professionals
+        - Casual users
+        - Developers/Contributors
+        - Enterprise users
+        - Accessibility users
+        - Specific user group (please specify in additional context)
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation Ideas
+      description: Do you have any ideas about how this could be implemented? (Optional)
+      placeholder: |
+        If you have technical ideas about implementation:
+        - What components would need to be modified?
+        - Are there any specific libraries or APIs that could help?
+        - What are potential technical challenges?
+        
+        Note: Technical knowledge is not required - we welcome all feature ideas!
+    validations:
+      required: false
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups or Examples
+      description: Any mockups, screenshots, or examples that illustrate your idea?
+      placeholder: |
+        You can drag and drop images here or describe:
+        - UI mockups or wireframes
+        - Screenshots from other applications showing similar features
+        - Examples of how this feature works elsewhere
+    validations:
+      required: false
+
+  - type: dropdown
+    id: breaking-changes
+    attributes:
+      label: Breaking Changes
+      description: Would this feature require breaking changes to existing functionality?
+      options:
+        - No, this is purely additive
+        - Minor changes to existing behavior
+        - Significant changes required
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other information that would help us understand your request
+      placeholder: |
+        Additional information:
+        - Links to related resources
+        - Similar features in other applications
+        - Research or articles supporting this feature
+        - Community discussions about this need
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Would you be interested in contributing to this feature?
+      options:
+        - label: I would be willing to help implement this feature
+        - label: I would be willing to test this feature
+        - label: I would be willing to help with documentation
+        - label: I would be willing to provide feedback during development
