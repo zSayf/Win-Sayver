@@ -22,7 +22,7 @@
 ## 🎯 What is Win Sayver?
 
 Win Sayver is a **production-ready, AI-powered Windows troubleshooting assistant** that analyzes your system specifications, processes error screenshots, and provides intelligent solutions using **Google Gemini 2.5 Pro** with advanced Chain-of-Thought reasoning.
-
+![Home Tab](https://github.com/zSayf/Win-Sayver/blob/main/Assests/Home%20tab.png)
 ### 🌟 Why Choose Win Sayver?
 
 - **🧠 Advanced AI Analysis**: Leverages Google's latest Gemini 2.5 Pro model with Chain-of-Thought reasoning
