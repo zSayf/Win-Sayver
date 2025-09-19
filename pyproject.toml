@@ -1,0 +1,159 @@
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel>=0.41.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "win-sayver"
+version = "3.1.0"
+description = "AI-Powered Windows Troubleshooting Assistant with Google Gemini 2.5 Pro"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Win Sayver Team", email = "contact@winsayver.com"}
+]
+maintainers = [
+    {name = "Win Sayver Team", email = "contact@winsayver.com"}
+]
+keywords = [
+    "windows", "troubleshooting", "ai", "gemini", "diagnostics", 
+    "system-analysis", "automation", "artificial-intelligence",
+    "desktop-application", "pyqt6", "windows-management"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Systems Administration",
+    "Topic :: System :: Monitoring",
+    "Topic :: Utilities",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Environment :: Win32 (MS Windows)",
+    "Natural Language :: English",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "wmi>=1.5.1",
+    "psutil>=5.9.0",
+    "google-generativeai>=0.8.0",
+    "PyQt6>=6.4.2",
+    "Pillow>=10.0.0",
+    "cryptography>=41.0.0",
+    "requests>=2.31.0",
+    "colorama>=0.4.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-qt>=4.2.0",
+    "flake8>=6.0.0",
+    "black>=23.0.0",
+    "mypy>=1.5.0",
+    "pre-commit>=3.3.0",
+]
+build = [
+    "pyinstaller>=5.13.0",
+    "setuptools>=68.0.0",
+    "wheel>=0.41.0",
+    "build>=0.10.0",
+]
+
+[project.scripts]
+win-sayver = "main_gui:main"
+winsayver = "main_gui:main"
+
+[project.urls]
+Homepage = "https://github.com/zSayf/Win-Sayver"
+Documentation = "https://github.com/zSayf/Win-Sayver/wiki"
+Repository = "https://github.com/zSayf/Win-Sayver.git"
+"Bug Tracker" = "https://github.com/zSayf/Win-Sayver/issues"
+Changelog = "https://github.com/zSayf/Win-Sayver/blob/main/CHANGELOG.md"
+Funding = "https://github.com/sponsors/zSayf"
+
+[tool.setuptools]
+package-dir = {"" = "win_sayver_poc"}
+
+[tool.setuptools.packages.find]
+where = ["win_sayver_poc"]
+
+[tool.setuptools.package-data]
+"*" = ["*.md", "*.txt", "*.bat", "*.rst", "docs/*", "templates/*", "assets/*"]
+
+[tool.black]
+line-length = 120
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+addopts = "-ra -q --strict-markers --strict-config"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+
+[tool.coverage.run]
+source = ["win_sayver_poc"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/build/*",
+    "*/dist/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]

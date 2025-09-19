@@ -1,0 +1,28 @@
+# Win Sayver - Production Requirements
+# AI-Powered Windows Troubleshooting Assistant v3.1.0
+# 
+# Install with: pip install -r requirements.txt
+# For development: pip install -r requirements-dev.txt
+
+# Core system profiling libraries
+wmi>=1.5.1                    # Windows Management Instrumentation
+psutil>=5.9.0                 # Cross-platform system and process utilities
+
+# AI integration (Official Google GenAI SDK)
+google-generativeai>=0.8.0   # Official Google Gemini AI API
+
+# GUI Framework
+PyQt6>=6.4.2                 # Professional desktop GUI framework
+
+# Image processing and validation
+Pillow>=10.0.0               # Python Imaging Library for comprehensive image processing
+
+# Security and data storage
+cryptography>=41.0.0         # Secure encryption for API keys and sensitive data
+
+# Utilities
+requests>=2.31.0             # HTTP library for API calls
+colorama>=0.4.6             # Colored console output
+
+# Optional: For building standalone executables
+# pyinstaller>=5.13.0        # Uncomment if you want to build .exe files
