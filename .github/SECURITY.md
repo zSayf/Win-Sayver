@@ -16,8 +16,6 @@ We currently support the following versions with security updates:
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
-Instead, please report security vulnerabilities by sending an email to **security@winsayver.com**.
-
 ### What to include in your report
 
 Please include the following information in your security report:
