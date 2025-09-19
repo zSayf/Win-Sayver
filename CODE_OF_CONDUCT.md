@@ -49,11 +49,6 @@ Examples of unacceptable behavior include:
 * Report security issues through proper channels
 * Be mindful when sharing system information or screenshots
 
-## Enforcement
-
-Instances of unacceptable behavior may be reported to conduct@winsayver.com.
-
-All complaints will be reviewed and investigated promptly and fairly.
 
 ## Attribution
 
