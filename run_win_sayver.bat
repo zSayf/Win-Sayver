@@ -12,7 +12,7 @@ REM Change to the project directory
 cd /d "%~dp0win_sayver_poc"
 
 REM Check if Python is installed
-echo [1/6] Checking Python installation...
+echo [1/4] Checking Python installation...
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
     echo ERROR: Python is not installed or not in PATH
@@ -22,86 +22,28 @@ if %errorlevel% neq 0 (
 )
 echo     ✓ Python found
 
-REM Check Python version (minimum 3.8)
-echo [2/6] Verifying Python version...
-for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VERSION=%%i
-echo     ✓ Python version: %PYTHON_VERSION%
-
-REM Upgrade pip to latest version
-echo [3/6] Upgrading pip to latest version...
-python -m pip install --upgrade pip
-if %errorlevel% neq 0 (
-    echo WARNING: Failed to upgrade pip, continuing with current version...
-) else (
-    echo     ✓ pip upgraded successfully
-)
-
 REM Check if virtual environment exists, create if not
-echo [4/6] Setting up virtual environment...
+echo [2/4] Setting up virtual environment...
 if exist "venv\Scripts\activate.bat" (
     echo     ✓ Virtual environment found, activating...
-    call venv\Scripts\activate.bat
+    call venv\Scripts\activate.bat >nul
 ) else (
     echo     Creating new virtual environment...
-    python -m venv venv
+    python -m venv venv >nul 2>&1
     if %errorlevel% neq 0 (
         echo ERROR: Failed to create virtual environment
         echo Using system Python instead...
     ) else (
         echo     ✓ Virtual environment created, activating...
-        call venv\Scripts\activate.bat
+        call venv\Scripts\activate.bat >nul
     )
 )
 
-REM Install all required packages
-echo [5/6] Installing all required packages...
-echo     Installing core system profiling libraries...
-pip install "wmi>=1.5.1" "psutil>=5.9.0"
+REM Install/upgrade required packages
+echo [3/4] Installing required packages...
+pip install "PyQt6>=6.4.0" "wmi>=1.5.1" "psutil>=5.9.0" "google-genai>=1.0.0" "Pillow>=10.0.0" "cryptography>=41.0.0" "requests>=2.31.0" "colorama>=0.4.6" --upgrade >nul 2>&1
 
-echo     Installing Google Gemini AI SDK...
-pip install "google-genai>=1.0.0"
-
-echo     Installing PyQt6 GUI framework (version compatible with tools)...
-REM First uninstall any conflicting versions
-pip uninstall -y PyQt6 PyQt6-Qt6 PyQt6-tools pyqt6-plugins 2>nul
-REM Install compatible versions together
-pip install "PyQt6==6.4.2" "PyQt6-tools==6.4.2.3.3"
-if %errorlevel% neq 0 (
-    echo     WARNING: PyQt6-tools installation failed, installing PyQt6 only...
-    pip install "PyQt6>=6.4.0"
-)
-
-echo     Installing image processing libraries...
-pip install "Pillow>=10.0.0"
-
-echo     Installing security and utilities...
-pip install "cryptography>=41.0.0" "requests>=2.31.0" "colorama>=0.4.6"
-
-echo     Final verification (skipping conflicting requirements)...
-REM Install requirements one by one to avoid conflicts
-for %%p in (wmi psutil google-genai Pillow cryptography requests colorama) do (
-    pip install %%p
-)
-
-REM Check if PyQt6 is available (most critical for GUI)
-python -c "import PyQt6" >nul 2>&1
-if %errorlevel% neq 0 (
-    echo ERROR: PyQt6 installation failed - GUI cannot start
-    echo Attempting emergency PyQt6 installation...
-    pip install PyQt6 --force-reinstall
-    python -c "import PyQt6" >nul 2>&1
-    if %errorlevel% neq 0 (
-        echo FATAL ERROR: Cannot install PyQt6
-        echo Please manually run: pip install PyQt6
-        pause
-        exit /b 1
-    )
-)
-
-echo     ✓ All core packages installed successfully
-
-echo [6/6] Starting Win Sayver application...
-echo     ✓ All dependencies verified and installed
+echo [4/4] Starting Win Sayver application...
 echo.
 
 REM Run the main application
