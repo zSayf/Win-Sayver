@@ -45,14 +45,7 @@ class MCPLinkFinder:
                     'Microsoft KB "{topic}" Windows 11 current version',
                 ],
             },
-            "discord_support": {
-                "domains": ["support.discord.com", "discord.com"],
-                "search_templates": [
-                    'site:support.discord.com "{topic}" Windows current',
-                    'Discord "{topic}" installation Windows 11 official guide',
-                    'Discord help "{topic}" fix specific error',
-                ],
-            },
+
             "general_windows": {
                 "domains": ["microsoft.com", "answers.microsoft.com"],
                 "search_templates": [
@@ -72,7 +65,7 @@ class MCPLinkFinder:
 
         Args:
             topic: Topic to search for
-            category: Category of search (microsoft_support, discord_support, general_windows)
+            category: Category of search (microsoft_support, software_support, general_windows)
             max_results: Maximum number of results to return
 
         Returns:
@@ -155,14 +148,16 @@ class MCPLinkFinder:
                     )
                 )
 
-            if "discord" in query.lower():
+            if "software" in query.lower():
                 results.append(
                     SearchResult(
-                        title="Discord Support Center",
-                        url="https://support.discord.com/",
-                        snippet="Official Discord help and support",
+                        title="Software Support Center",
+                        url="https://support.softwarecompany.com/",
+                        snippet="Official software help and support",
                     )
                 )
+
+
 
             return results
 
@@ -274,10 +269,7 @@ class MCPLinkFinder:
             score += 0.3
         elif "microsoft.com" in domain:
             score += 0.25
-        elif "support.discord.com" in domain:
-            score += 0.35
-        elif "discord.com" in domain:
-            score += 0.3
+
 
         # Content relevance (based on title)
         content_score = 0.0
@@ -325,10 +317,7 @@ class MCPLinkFinder:
             score += 0.3
         elif "microsoft.com" in domain:
             score += 0.25
-        elif "support.discord.com" in domain:
-            score += 0.35
-        elif "discord.com" in domain:
-            score += 0.3
+
 
         # Content relevance (based on title and snippet)
         content_score = 0.0

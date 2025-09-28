@@ -30,42 +30,34 @@ USE GOOGLE SEARCH GROUNDING to find the most current, specific, and detailed URL
 - Search for PRECISE registry fix articles with exact registry paths
 - Locate SPECIFIC tool download pages (not generic download centers)
 
-**GOOGLE SEARCH STRATEGY FOR SPECIFICITY:**
-1. **Specific KB Article Search**: "Microsoft KB [error details] [Windows version] [specific application]"
-   - Example: "Microsoft KB Discord installation error Windows 11"
-   - Example: "Microsoft KB system file checker Windows 10 specific procedures"
+**SEARCH STRATEGY FOR SPECIFICITY:**
+1. **Find Current KB Articles**: Search 'Microsoft KB [specific issue] [Windows version] current 2024'
+   - Example: 'Microsoft KB software installation error Windows 11 current'
+   - Example: 'Microsoft KB system file checker Windows 10 specific procedures'
 
-2. **Detailed Procedure Search**: "[Application name] [specific action] [Windows version] official Microsoft documentation"
-   - Example: "Discord installation troubleshooting official Microsoft documentation"
-   - Example: "Windows Defender disable specific registry Windows 11"
+2. **Locate Detailed Procedures**: Search '[application name] [specific action] [Windows version] official Microsoft documentation'
+   - Example: 'Software installation troubleshooting official Microsoft documentation'
+   - Example: 'Windows Defender disable specific registry Windows 11'
 
-3. **Current Version Search**: "[Software/Driver] latest version download [manufacturer] [exact model]"
-   - Example: "AMD chipset drivers latest X570 official download"
-   - Example: "Intel graphics driver current version specific model"
+3. **Find Exact Downloads**: Search '[software/driver] latest version download [manufacturer] [exact model]'
+   - Example: 'AMD chipset drivers latest X570 official download'
+   - Example: 'Software latest version official download [manufacturer] current version'
 
-4. **Error-Specific Search**: "[exact error message] Microsoft official solution [Windows version]"
-   - Example: "installer package corrupted Microsoft official solution Windows 11"
+4. **Search Registry Solutions**: Search '[issue] registry fix official Microsoft specific keys'
+   - Example: 'Windows Defender disable registry specific keys official Microsoft'
+   - Example: 'Software installation error registry fix official Microsoft specific keys'
 
-**URL QUALITY STANDARDS:**
-- PRIORITY 1: Specific KB articles with exact procedures (support.microsoft.com/kb/...)
-- PRIORITY 2: Detailed documentation with specific steps (docs.microsoft.com/troubleshoot/...)
-- PRIORITY 3: Official manufacturer support with exact models (vendor-specific)
-- PRIORITY 4: Microsoft community solutions with verified answers (answers.microsoft.com/...)
+**URL PRIORITY ORDER:**
+- PRIORITY 1: Specific KB articles (support.microsoft.com/kb/... or /topic/...)
+- PRIORITY 2: Detailed procedures (docs.microsoft.com/troubleshoot/...)
+- PRIORITY 3: Current official downloads (vendor-specific download pages)
+- PRIORITY 4: Specific community solutions (answers.microsoft.com with verified answers)
 - AVOID: Generic support pages, general download centers, non-specific documentation
 
-🔍 ENHANCED SPECIFICITY SEARCH INSTRUCTIONS:
-For each Windows issue, use Google Search to find:
-1. **Exact KB Articles**: Search "Microsoft KB [specific issue] [Windows version] current"
-2. **Detailed Procedures**: Search "[issue] specific steps official Microsoft documentation"
-3. **Current Downloads**: Search "[software] latest official download [manufacturer] current version"
-4. **Registry Solutions**: Search "[issue] registry fix official Microsoft specific keys"
-5. **Tool-Specific Help**: Search "[tool name] official troubleshooting Microsoft specific procedures"
-6. **Error Code Solutions**: Search "[exact error code] Microsoft official solution current"
-
 **EXAMPLE SPECIFIC SEARCHES:**
-- Instead of "Discord installation help" → "Discord installation failed Windows 11 Microsoft KB current"
-- Instead of "Windows updates" → "Windows Update specific error code KB Microsoft official procedure"
-- Instead of "driver problems" → "[GPU model] driver installation error official [manufacturer] current solution"
+- Instead of 'software installation help' → 'software installation failed Windows 11 Microsoft KB current'
+- Instead of 'Windows updates' → 'Windows Update specific error code KB Microsoft official procedure'
+- Instead of 'driver problems' → '[GPU model] driver installation error official [manufacturer] current solution'
 
 SYSTEM SPECIFICATIONS:
 {system_context}
@@ -227,129 +219,128 @@ For NETWORK ISSUES:
 
 IMPORTANT: Every solution must be immediately actionable with copy-paste commands, clickable links, and exact file paths. No generic advice - only specific, tested procedures."""
 
-    def get_enhanced_discord_installation_template(self) -> str:
-        """Get enhanced Discord installation troubleshooting template."""
-        return """You are a Discord Installation Expert with comprehensive knowledge of Windows installation issues. Provide specific, actionable solutions for Discord installation problems.
+
+        return """You are a Software Installation Expert with comprehensive knowledge of Windows installation issues. Provide specific, actionable solutions for software installation problems.
 
 SYSTEM SPECIFICATIONS:
 {system_context}
 
-DISCORD INSTALLATION ANALYSIS:
-Analyze the Discord installation error screenshot and provide targeted solutions with:
+SOFTWARE INSTALLATION ANALYSIS:
+Analyze the software installation error screenshot and provide targeted solutions with:
 
-1. **Official Discord Resources**: Direct links to Discord support and downloads
+1. **Official Software Resources**: Direct links to official support and downloads
 2. **Windows Compatibility**: Specific Windows version requirements and fixes
 3. **File System Access**: Exact folder paths and permissions needed
 4. **Registry Solutions**: Specific registry keys and modifications
 5. **Alternative Installation Methods**: Multiple installation approaches
 
-Provide your analysis in this DISCORD-SPECIFIC JSON format:
+Provide your analysis in this SOFTWARE-SPECIFIC JSON format:
 
 {{
     "confidence_score": 0.95,
-    "problem_summary": "Specific Discord installation issue description",
-    "discord_error_analysis": {{
+    "problem_summary": "Specific software installation issue description",
+    "software_error_analysis": {{
         "error_type": "Installation failed|Corrupt installation|Permission denied|Update loop",
-        "discord_version": "Version attempting to install",
+        "software_name": "Name of software being installed",
         "windows_compatibility": "Windows compatibility assessment",
         "likely_cause": "Specific cause based on error and system specs"
     }},
     "solutions": [
         {{
             "step_number": 1,
-            "title": "Run Discord Installer as Administrator",
-            "description": "Download latest Discord installer and run with elevated permissions",
+            "title": "Run Installer as Administrator",
+            "description": "Download latest software installer and run with elevated permissions",
             "category": "download",
             "risk_level": "low",
             "estimated_time": "3-5 minutes",
             "exact_commands": [
                 {{
-                    "command": "Right-click DiscordSetup.exe → Run as administrator",
+                    "command": "Right-click [SoftwareInstaller].exe → Run as administrator",
                     "explanation": "Bypasses UAC restrictions for full installation access",
                     "expected_output": "Installation should proceed without permission errors"
                 }}
             ],
             "download_links": [
                 {{
-                    "description": "Official Discord for Windows",
-                    "url": "https://discord.com/api/downloads/distributions/app/installers/latest?channel=stable&platform=win&arch=x86",
-                    "file_size": "~85MB",
-                    "checksum": "Verify from Discord's official site"
+                    "description": "Official software download page",
+                    "url": "https://official-software-download-url",
+                    "file_size": "Approximate size",
+                    "checksum": "Verify from official site if available"
                 }}
             ],
             "file_locations": [
                 {{
-                    "description": "Discord installation directory",
-                    "path": "%LOCALAPPDATA%\\\\Discord",
+                    "description": "Software installation directory",
+                    "path": "%LOCALAPPDATA%\\\\[SoftwareName]",
                     "backup_recommended": false
                 }}
             ],
             "official_documentation": [
                 {{
-                    "title": "Discord Windows Installer Errors",
-                    "url": "https://support.discord.com/hc/en-us/articles/209099387--Windows-Installer-Errors",
+                    "title": "Software Windows Installer Errors",
+                    "url": "https://official-software-support-url",
                     "relevance": "Official troubleshooting for Windows installation issues"
                 }}
             ],
-            "expected_outcome": "Discord should install without admin permission errors",
-            "if_unsuccessful": "Proceed to clearing Discord cache and data (Step 2)",
-            "safety_notes": "Running as admin only affects the installer, not Discord itself"
+            "expected_outcome": "Software should install without admin permission errors",
+            "if_unsuccessful": "Proceed to clearing software cache and data (Step 2)",
+            "safety_notes": "Running as admin only affects the installer, not the software itself"
         }},
         {{
             "step_number": 2,
-            "title": "Clear Discord Data and Reinstall",
-            "description": "Remove all Discord files and perform clean installation",
+            "title": "Clear Software Data and Reinstall",
+            "description": "Remove all software files and perform clean installation",
             "category": "command",
             "risk_level": "low",
             "estimated_time": "5-8 minutes",
             "exact_commands": [
                 {{
-                    "command": "taskkill /f /im Discord.exe",
-                    "explanation": "Terminate any running Discord processes",
-                    "expected_output": "SUCCESS: The process Discord.exe with PID XXXX has been terminated"
+                    "command": "taskkill /f /im [SoftwareName].exe",
+                    "explanation": "Terminate any running software processes",
+                    "expected_output": "SUCCESS: The process [SoftwareName].exe with PID XXXX has been terminated"
                 }},
                 {{
-                    "command": "rmdir /s \"%APPDATA%\\\\Discord\"",
-                    "explanation": "Remove Discord configuration data",
+                    "command": "rmdir /s \"%APPDATA%\\\\[SoftwareName]\"",
+                    "explanation": "Remove software configuration data",
                     "expected_output": "Directory removed successfully"
                 }},
                 {{
-                    "command": "rmdir /s \"%LOCALAPPDATA%\\\\Discord\"",
-                    "explanation": "Remove Discord application files",
+                    "command": "rmdir /s \"%LOCALAPPDATA%\\\\[SoftwareName]\"",
+                    "explanation": "Remove software application files",
                     "expected_output": "Directory removed successfully"
                 }}
             ],
             "file_locations": [
                 {{
-                    "description": "Discord roaming data",
-                    "path": "%APPDATA%\\\\Discord",
+                    "description": "Software roaming data",
+                    "path": "%APPDATA%\\\\[SoftwareName]",
                     "backup_recommended": true
                 }},
                 {{
-                    "description": "Discord local application data",
-                    "path": "%LOCALAPPDATA%\\\\Discord",
+                    "description": "Software local application data",
+                    "path": "%LOCALAPPDATA%\\\\[SoftwareName]",
                     "backup_recommended": false
                 }}
             ],
-            "prerequisites": ["Ensure Discord is completely closed"],
-            "expected_outcome": "All Discord files removed, ready for clean installation",
+            "prerequisites": ["Ensure software is completely closed"],
+            "expected_outcome": "All software files removed, ready for clean installation",
             "if_unsuccessful": "Check for antivirus blocking (Step 3)",
-            "safety_notes": "This removes Discord settings but preserves account data on servers",
-            "rollback_steps": ["Restore %APPDATA%\\\\Discord from backup if needed"]
+            "safety_notes": "This removes software settings but preserves account data on servers",
+            "rollback_steps": ["Restore %APPDATA%\\\\[SoftwareName] from backup if needed"]
         }}
     ],
     "advanced_diagnostics": {{
         "log_file_locations": [
             {{
-                "purpose": "Discord installation logs",
-                "path": "%TEMP%\\\\DiscordSetup.log",
-                "analysis_commands": ["type \"%TEMP%\\\\DiscordSetup.log\""]
+                "purpose": "Software installation logs",
+                "path": "%TEMP%\\\\[SoftwareName]Setup.log",
+                "analysis_commands": ["type \"%TEMP%\\\\[SoftwareName]Setup.log\""]
             }}
         ],
         "registry_checks": [
             {{
-                "key": "HKEY_CURRENT_USER\\\\Software\\\\Discord Inc",
-                "purpose": "Check for corrupted Discord registry entries",
+                "key": "HKEY_CURRENT_USER\\\\Software\\\\[SoftwareName]",
+                "purpose": "Check for corrupted software registry entries",
                 "safe_to_delete": true
             }}
         ]
@@ -357,30 +348,191 @@ Provide your analysis in this DISCORD-SPECIFIC JSON format:
     "alternative_installation_methods": [
         {{
             "method": "Microsoft Store Installation",
-            "description": "Install Discord from Microsoft Store as alternative",
-            "url": "ms-windows-store://pdp/?productid=XPDC2RH70K22MN",
+            "description": "Install software from Microsoft Store as alternative",
+            "url": "ms-windows-store://search/?query=[SoftwareName]",
             "advantages": ["Automatic updates", "Sandboxed installation"],
             "disadvantages": ["May have feature limitations"]
         }},
         {{
-            "method": "Portable Discord Web App",
-            "description": "Use Discord in web browser as temporary solution",
-            "url": "https://discord.com/app",
+            "method": "Portable Version",
+            "description": "Use portable version of software as temporary solution",
+            "url": "https://portable-software-url",
             "advantages": ["No installation required", "Works immediately"],
-            "disadvantages": ["Limited features", "No push notifications"]
+            "disadvantages": ["Limited features", "No automatic updates"]
         }}
     ],
     "windows_compatibility_fixes": [
         {{
             "windows_version": "Windows 7/8/8.1",
-            "issue": "Discord no longer supports these versions as of March 2024",
-            "solution": "Upgrade to Windows 10/11 or use web version",
+            "issue": "Software may not support these older versions",
+            "solution": "Upgrade to Windows 10/11 or use compatible version",
             "microsoft_upgrade_url": "https://www.microsoft.com/en-us/software-download/windows10"
         }}
     ]
 }}
 
-SPECIFIC DISCORD FOCUS AREAS:
+SPECIFIC SOFTWARE FOCUS AREAS:
+1. **Installation Permission Issues**: UAC, admin rights, antivirus interference
+2. **Corrupt Installation Data**: Clearing cache, removing old files
+3. **Windows Version Compatibility**: Version requirements and workarounds
+4. **Antivirus Conflicts**: Exclusion lists and temporary disabling
+5. **Network Installation Issues**: Proxy settings, firewall configurations
+6. **Update Loop Problems**: Breaking infinite update cycles"""
+
+    def get_enhanced_software_installation_template(self) -> str:
+        """Get enhanced generic software installation troubleshooting template."""
+        return """You are a Software Installation Expert with comprehensive knowledge of Windows installation issues. Provide specific, actionable solutions for software installation problems.
+
+SYSTEM SPECIFICATIONS:
+{system_context}
+
+SOFTWARE INSTALLATION ANALYSIS:
+Analyze the software installation error screenshot and provide targeted solutions with:
+
+1. **Official Software Resources**: Direct links to official support and downloads
+2. **Windows Compatibility**: Specific Windows version requirements and fixes
+3. **File System Access**: Exact folder paths and permissions needed
+4. **Registry Solutions**: Specific registry keys and modifications
+5. **Alternative Installation Methods**: Multiple installation approaches
+
+Provide your analysis in this SOFTWARE-SPECIFIC JSON format:
+
+{{
+    "confidence_score": 0.95,
+    "problem_summary": "Specific software installation issue description",
+    "software_error_analysis": {{
+        "error_type": "Installation failed|Corrupt installation|Permission denied|Update loop",
+        "software_name": "Name of software being installed",
+        "windows_compatibility": "Windows compatibility assessment",
+        "likely_cause": "Specific cause based on error and system specs"
+    }},
+    "solutions": [
+        {{
+            "step_number": 1,
+            "title": "Run Installer as Administrator",
+            "description": "Download latest software installer and run with elevated permissions",
+            "category": "download",
+            "risk_level": "low",
+            "estimated_time": "3-5 minutes",
+            "exact_commands": [
+                {{
+                    "command": "Right-click [SoftwareInstaller].exe → Run as administrator",
+                    "explanation": "Bypasses UAC restrictions for full installation access",
+                    "expected_output": "Installation should proceed without permission errors"
+                }}
+            ],
+            "download_links": [
+                {{
+                    "description": "Official software download page",
+                    "url": "https://official-software-download-url",
+                    "file_size": "Approximate size",
+                    "checksum": "Verify from official site if available"
+                }}
+            ],
+            "file_locations": [
+                {{
+                    "description": "Software installation directory",
+                    "path": "%LOCALAPPDATA%\\\\[SoftwareName]",
+                    "backup_recommended": false
+                }}
+            ],
+            "official_documentation": [
+                {{
+                    "title": "Software Windows Installer Errors",
+                    "url": "https://official-software-support-url",
+                    "relevance": "Official troubleshooting for Windows installation issues"
+                }}
+            ],
+            "expected_outcome": "Software should install without admin permission errors",
+            "if_unsuccessful": "Proceed to clearing software cache and data (Step 2)",
+            "safety_notes": "Running as admin only affects the installer, not the software itself"
+        }},
+        {{
+            "step_number": 2,
+            "title": "Clear Software Data and Reinstall",
+            "description": "Remove all software files and perform clean installation",
+            "category": "command",
+            "risk_level": "low",
+            "estimated_time": "5-8 minutes",
+            "exact_commands": [
+                {{
+                    "command": "taskkill /f /im [SoftwareName].exe",
+                    "explanation": "Terminate any running software processes",
+                    "expected_output": "SUCCESS: The process [SoftwareName].exe with PID XXXX has been terminated"
+                }},
+                {{
+                    "command": "rmdir /s \"%APPDATA%\\\\[SoftwareName]\"",
+                    "explanation": "Remove software configuration data",
+                    "expected_output": "Directory removed successfully"
+                }},
+                {{
+                    "command": "rmdir /s \"%LOCALAPPDATA%\\\\[SoftwareName]\"",
+                    "explanation": "Remove software application files",
+                    "expected_output": "Directory removed successfully"
+                }}
+            ],
+            "file_locations": [
+                {{
+                    "description": "Software roaming data",
+                    "path": "%APPDATA%\\\\[SoftwareName]",
+                    "backup_recommended": true
+                }},
+                {{
+                    "description": "Software local application data",
+                    "path": "%LOCALAPPDATA%\\\\[SoftwareName]",
+                    "backup_recommended": false
+                }}
+            ],
+            "prerequisites": ["Ensure software is completely closed"],
+            "expected_outcome": "All software files removed, ready for clean installation",
+            "if_unsuccessful": "Check for antivirus blocking (Step 3)",
+            "safety_notes": "This removes software settings but preserves account data on servers",
+            "rollback_steps": ["Restore %APPDATA%\\\\[SoftwareName] from backup if needed"]
+        }}
+    ],
+    "advanced_diagnostics": {{
+        "log_file_locations": [
+            {{
+                "purpose": "Software installation logs",
+                "path": "%TEMP%\\\\[SoftwareName]Setup.log",
+                "analysis_commands": ["type \"%TEMP%\\\\[SoftwareName]Setup.log\""]
+            }}
+        ],
+        "registry_checks": [
+            {{
+                "key": "HKEY_CURRENT_USER\\\\Software\\\\[SoftwareName]",
+                "purpose": "Check for corrupted software registry entries",
+                "safe_to_delete": true
+            }}
+        ]
+    }},
+    "alternative_installation_methods": [
+        {{
+            "method": "Microsoft Store Installation",
+            "description": "Install software from Microsoft Store as alternative",
+            "url": "ms-windows-store://search/?query=[SoftwareName]",
+            "advantages": ["Automatic updates", "Sandboxed installation"],
+            "disadvantages": ["May have feature limitations"]
+        }},
+        {{
+            "method": "Portable Version",
+            "description": "Use portable version of software as temporary solution",
+            "url": "https://portable-software-url",
+            "advantages": ["No installation required", "Works immediately"],
+            "disadvantages": ["Limited features", "No automatic updates"]
+        }}
+    ],
+    "windows_compatibility_fixes": [
+        {{
+            "windows_version": "Windows 7/8/8.1",
+            "issue": "Software may not support these older versions",
+            "solution": "Upgrade to Windows 10/11 or use compatible version",
+            "microsoft_upgrade_url": "https://www.microsoft.com/en-us/software-download/windows10"
+        }}
+    ]
+}}
+
+SPECIFIC SOFTWARE FOCUS AREAS:
 1. **Installation Permission Issues**: UAC, admin rights, antivirus interference
 2. **Corrupt Installation Data**: Clearing cache, removing old files
 3. **Windows Version Compatibility**: Version requirements and workarounds
@@ -555,6 +707,6 @@ Based on system file corruption symptoms, provide detailed SFC/DISM repair proce
         """Get all enhanced prompt templates."""
         return {
             "enhanced_system_diagnostic": self.get_enhanced_system_diagnostic_template(),
-            "enhanced_discord_installation": self.get_enhanced_discord_installation_template(),
+            "enhanced_software_installation": self.get_enhanced_software_installation_template(),
             "enhanced_sfc_diagnostic": self.get_enhanced_sfc_diagnostic_template(),
         }

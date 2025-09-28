@@ -438,13 +438,13 @@ ADVANCED TROUBLESHOOTING METHODOLOGY:
                     # Map error types to enhanced templates
                     enhanced_mapping = {
                         "system_diagnostic": "enhanced_system_diagnostic",
-                        "discord_installation": "enhanced_discord_installation",
+                        "software_installation": "enhanced_software_installation",
                         "sfc_diagnostic": "enhanced_sfc_diagnostic",
                     }
 
-                    # Check for Discord-related errors
-                    if additional_context and "discord" in additional_context.lower():
-                        error_type = "discord_installation"
+                    # Check for software installation-related errors (generic approach)
+                    if additional_context and any(keyword in additional_context.lower() for keyword in ["install", "setup", "installer", "installation"]):
+                        error_type = "software_installation"
 
                     # Check for system file corruption indicators
                     if additional_context and any(
@@ -753,7 +753,7 @@ ADVANCED TROUBLESHOOTING METHODOLOGY:
             response_clean = response.strip()
 
             # Remove markdown code blocks if present
-            if response_clean.startswith("```json"):
+            if response_clean.startswith("``json"):
                 response_clean = response_clean[7:]
             if response_clean.endswith("```"):
                 response_clean = response_clean[:-3]
@@ -878,7 +878,7 @@ ADVANCED TROUBLESHOOTING METHODOLOGY:
                     elif "analysis_summary" in parsed_response:
                         if "error_description" in parsed_response["analysis_summary"]:
                             parsed_response["problem_summary"] = (
-                                f"Discord installation issue: {parsed_response['analysis_summary']['error_description'][:200]}"
+                                f"Software installation issue: {parsed_response['analysis_summary']['error_description'][:200]}"
                             )
                         elif "initial_hypothesis" in parsed_response["analysis_summary"]:
                             parsed_response["problem_summary"] = parsed_response["analysis_summary"][
@@ -921,7 +921,7 @@ ADVANCED TROUBLESHOOTING METHODOLOGY:
                     ):
                         thinking.extend(parsed_response["cause_determination"]["supporting_evidence"][:2])
                     parsed_response["thinking_process"] = (
-                        thinking if thinking else ["Analyzed Discord installation error symptoms"]
+                        thinking if thinking else ["Analyzed software installation error symptoms"]
                     )
 
             # Validate required fields

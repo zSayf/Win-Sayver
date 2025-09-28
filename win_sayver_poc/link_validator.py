@@ -194,7 +194,7 @@ class LinkValidator:
         Find working alternative links using enhanced MCP-powered search.
 
         Args:
-            topic: Topic to search for (e.g., "Windows Defender", "Discord installation")
+            topic: Topic to search for (e.g., "Windows Defender", "software installation")
             link_type: Type of links to search for
 
         Returns:
@@ -207,7 +207,7 @@ class LinkValidator:
             # Map our link types to MCP categories
             category_mapping = {
                 "microsoft_support": "microsoft_support",
-                "discord_support": "discord_support",
+                "software_support": "software_support",
                 "windows_troubleshooting": "general_windows",
             }
 
@@ -268,11 +268,11 @@ class LinkValidator:
                     "https://docs.microsoft.com/en-us/troubleshoot/windows-client",
                     "https://techcommunity.microsoft.com/t5/windows-11/ct-p/Windows11",
                 ]
-            elif link_type == "discord_support" or "discord" in topic.lower():
+            elif link_type == "software_support":
                 found_links = [
-                    "https://support.discord.com/",
-                    "https://discord.com/download",
-                    "https://discord.com/safety",
+                    "https://support.softwarecompany.com/",
+                    "https://softwarecompany.com/download",
+                    "https://softwarecompany.com/safety",
                 ]
             else:
                 # General fallback
@@ -318,12 +318,20 @@ class LinkValidator:
                     f"{topic} Windows 11 troubleshooting guide",
                 ]
             )
-        elif link_type == "discord_support":
+        elif link_type == "software_support":
             queries.extend(
                 [
-                    f"site:support.discord.com {topic}",
-                    f"Discord {topic} installation guide",
-                    f"{topic} Discord Windows fix",
+                    f"site:support.softwarecompany.com {topic}",
+                    f"Software {topic} installation guide",
+                    f"{topic} software Windows fix",
+                ]
+            )
+        elif link_type == "software_support":
+            queries.extend(
+                [
+                    f"site:support.softwarecompany.com {topic}",
+                    f"Software {topic} installation guide",
+                    f"{topic} software Windows fix",
                 ]
             )
         else:
@@ -355,11 +363,12 @@ class LinkValidator:
                         "title": "Windows Community",
                     },
                 ]
-            elif "discord" in query.lower():
+            elif "software" in query.lower():
                 results = [
-                    {"url": "https://support.discord.com/", "title": "Discord Support"},
-                    {"url": "https://discord.com/download", "title": "Discord Download"},
+                    {"url": "https://support.softwarecompany.com/", "title": "Software Support"},
+                    {"url": "https://softwarecompany.com/download", "title": "Software Download"},
                 ]
+
 
             if results:
                 return {"results": results}
@@ -377,8 +386,7 @@ class LinkValidator:
             "docs.microsoft.com",
             "techcommunity.microsoft.com",
             "answers.microsoft.com",
-            "support.discord.com",
-            "discord.com",
+
             "github.com",
         ]
 
@@ -670,7 +678,7 @@ class AIResponseLinkValidator:
         has_guid = bool(re.search(guid_pattern, url))
         has_topic = any(part for part in path_parts if len(part) > 10 and part not in ["en-us", "windows", "support"])
 
-        # Calculate specificity level (0-3)
+        # Calculate specificity level (0-33)
         specificity_level = 0
         if has_kb:
             specificity_level = 3  # Very specific (KB article)
