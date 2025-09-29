@@ -4,8 +4,15 @@ Win Sayver - Main GUI Application
 =================================
 
 Professional PyQt6 desktop interface for AI-powered Windows troubleshooting.
-Supports multiple image analysis, error description input, and real-time
-AI analysis with Gemini 2.5 Pro thinking capabilities.
+Analyzes error screenshots and system information to provide intelligent solutions
+using Google's Gemini AI models with advanced thinking capabilities.
+
+Features:
+- Multi-image error analysis
+- Real-time AI-powered troubleshooting
+- System specification collection
+- Secure API key management
+- Responsive design for all window sizes
 """
 
 import json
@@ -447,6 +454,167 @@ class WinSayverMainWindow(QMainWindow):  # type: ignore
 
                         # Log the fallback usage for future improvement
                         self.logger.info(f"Primary URL {url_string} failed, succeeded with fallback: {attempt_url}")
+            except Exception as e:
+                self.logger.error(f"Error handling Windows settings URL: {e}")
+                continue
+
+        # Show a more detailed message in a tooltip or status for debugging
+        if self.logger.isEnabledFor(logging.DEBUG):
+            status_bar = self.statusBar()
+            if status_bar:
+                status_bar.setToolTip(f"Tried URLs: {', '.join(tried_urls)}")
+
+    def __init__(self):
+        """Initialize the main window."""
+        super().__init__()
+
+        # Initialize logging
+        self.logger = logging.getLogger(__name__)
+
+        # Initialize settings and theme manager
+        self.settings_manager = SettingsManager()
+        self.settings = self.settings_manager.settings
+        self.theme_manager = self.settings_manager.theme_manager
+
+        # Initialize UI state
+        self.selected_images = []
+        self.system_specs = {}
+        self.analysis_results = {}
+
+        # Initialize fallback model tracking
+        self._active_fallback_model: Optional[str] = None
+
+        # Initialize background workers
+        self._specs_worker: Optional[QThread] = None  # type: ignore
+
+        # Defer heavy initializations until needed
+        self.specs_collector = None
+        self.ai_client = None
+        self.prompt_engineer = None
+        self.security_manager = None
+        self.system_data_manager = None
+        self.responsive_system_info = None
+
+        # Setup UI
+        self._setup_ui()
+        self._setup_connections()
+        self._load_settings()
+
+        # Don't initialize components immediately to improve startup time
+        self.logger.info("Win Sayver GUI initialized successfully")
+
+    def _initialize_components(self) -> None:
+        """Initialize core Win Sayver components lazily when needed."""
+        # Skip initialization if already done
+        if self.specs_collector is not None and self.security_manager is not None:
+            return
+
+class WindowsSettingsLauncher(QSystemTrayIcon):
+
+    """System Tray Launcher to access Windows settings quickly.
+
+    Features include launching of the built-in Settings dialog (ms-settings:)
+    by parsing an incoming message that resembles ms-settings:name.subcategory.suboption,
+    handling URLs from chat conversations as they may lack some required options or arguments,
+    and presenting detailed feedback for when these launches fail for various reasons.
+
+    This includes comprehensive troubleshooting with specific messages based on whether an ms-settings:
+    launch attempt succeeds, and, when all ms-settings: URLS are failed to be launched, then:
+      1) providing feedback as an automatic failure with manual instructions
+      2) for advanced debugging providing feedback via an automatic tooltip, statusbar
+    """
+
+    _valid_categories: dict = None  # type: ignore
+    _valid_subcategories: dict = None  # type: ignore
+    _valid_suboptions: dict = None  # type: ignore
+
+    _windows_categories_urls = []
+    _windows_subcategories_urls = []
+    _windows_suboptions_urls = []
+
+    @property
+    def valid_categories(self):
+        if self._valid_categories is None:
+            self._valid_categories = parse_setting_valid("Windows 10,Windows 11/categories.toml")
+
+            urls_list: list[str] = []
+
+            self._windows_categories_urls = urls_list
+
+            assert type(urls_list) == list and self._windows_categories_urls == urls_list
+
+        return self._valid_categories
+
+    @property
+    def valid_subcategories(self):
+        if self._valid_subcategories is None:
+            self._valid_subcategories = parse_setting_valid("Windows 10,Windows 11/subcategories.toml")
+
+            urls_list: list[str] = []
+
+            self._windows_subcategories_urls = urls_list
+
+            assert type(urls_list) == list and self._windows_subcategories_urls == urls_list
+
+        return self._valid_subcategories
+
+    @property
+    def valid_suboptions(self):
+        if self._valid_suboptions is None:
+            self._valid_suboptions = parse_setting_valid("Windows 10,Windows 11/suboptions.toml")
+
+            urls_list: list[str] = []
+
+            self._windows_suboptions_urls = urls_list
+
+            assert type(urls_list) == list and self._windows_suboptions_urls == urls_list
+
+        return self._valid_suboptions
+
+    def open_setting(self, url_string: str) -> None:
+        """Open a Windows setting by URL string.
+
+        This method attempts to open the setting by URL string and handles
+        URL variations and errors gracefully.
+
+        Args:
+            url_string (str): The URL string to open the setting.
+
+        """
+
+        # Split the URL string into components
+        components = url_string.split(":")
+
+        # Ensure the URL string is valid
+        if len(components) != 2:
+            self.logger.warning(f"Invalid URL string: {url_string}")
+            return
+
+        # Parse the URL string into category, subcategory, and suboption
+        category, subcategory_suboption = components[1].split("/", 1)
+        subcategory, suboption = subcategory_suboption.split("/", 1)
+
+        # Get the valid URLs for the category, subcategory, and suboption
+        category_urls = self.valid_categories.get(category, [])
+        subcategory_urls = self.valid_subcategories.get(subcategory, [])
+        suboption_urls = self.valid_suboptions.get(suboption, [])
+
+        # Merge the URLs into a single list
+        all_urls = category_urls + subcategory_urls + suboption_urls
+
+        # Shuffle the URLs to avoid always trying the same one first
+        random.shuffle(all_urls)
+
+        # Attempt to open each URL
+        success = False
+        tried_urls = []
+
+        for attempt_url in all_urls:
+            tried_urls.append(attempt_url)
+
+            try:
+                if webbrowser.open(attempt_url):
+                    success = True
 
                     break  # Success, no need to try more URLs
 
@@ -478,9 +646,18 @@ class WinSayverMainWindow(QMainWindow):  # type: ignore
                 if status_bar:
                     status_bar.setToolTip(f"Tried URLs: {', '.join(tried_urls)}")
 
+                        # Log the fallback usage for future improvement
+                        self.logger.info(f"Primary URL {url_string} failed, succeeded with fallback: {attempt_url}")
+
+    def _initialize_components(self) -> None:
+        """Initialize core Win Sayver components lazily when needed."""
+        # Skip initialization if already done
+        if self.specs_collector is not None and self.security_manager is not None:
+            return
     def __init__(self):
         """Initialize the main window."""
         super().__init__()
+
 
         # Initialize logging
         self.logger = logging.getLogger(__name__)
@@ -489,14 +666,6 @@ class WinSayverMainWindow(QMainWindow):  # type: ignore
         self.settings_manager = SettingsManager()
         self.settings = self.settings_manager.settings
         self.theme_manager = self.settings_manager.theme_manager
-
-        # Initialize core components
-        self.specs_collector = None
-        self.ai_client = None
-        self.prompt_engineer = None
-        self.security_manager = None
-        self.system_data_manager = None
-        self.responsive_system_info = None
 
         # Initialize UI state
         self.selected_images = []
@@ -509,15 +678,90 @@ class WinSayverMainWindow(QMainWindow):  # type: ignore
         # Initialize background workers
         self._specs_worker: Optional[QThread] = None  # type: ignore
 
+        # Defer heavy initializations until needed
+        self.specs_collector = None
+        self.ai_client = None
+        self.prompt_engineer = None
+        self.security_manager = None
+        self.system_data_manager = None
+        self.responsive_system_info = None
+
         # Setup UI
         self._setup_ui()
         self._setup_connections()
         self._load_settings()
 
-        # Initialize components
-        self._initialize_components()
-
+        # Don't initialize components immediately to improve startup time
         self.logger.info("Win Sayver GUI initialized successfully")
+
+    def _initialize_components(self) -> None:
+        """Initialize core Win Sayver components lazily when needed."""
+        # Skip initialization if already done
+        if self.specs_collector is not None and self.security_manager is not None:
+            return
+
+        try:
+            # Initialize security manager first (lightweight)
+            if self.security_manager is None:
+                self.security_manager = SecurityManager()
+
+            # Initialize settings manager with theme support (lightweight)
+            if self.settings_manager is None:
+                from theme_manager import SettingsManager
+                self.settings_manager = SettingsManager()
+
+            # Initialize system data manager (lightweight)
+            if self.system_data_manager is None:
+                self.system_data_manager = SystemDataManager()
+
+            # Initialize system specs collector (can be deferred until needed)
+            if self.specs_collector is None:
+                self.specs_collector = SystemSpecsCollector()
+
+            # Try to load existing system specs
+            self._load_existing_system_specs()
+
+            # Initialize prompt engineer (lightweight)
+            if self.prompt_engineer is None:
+                self.prompt_engineer = PromptEngineer()
+
+            # Initialize AI client if API key is available (defer until needed)
+            self._initialize_ai_client()
+
+            # Update API key status in UI
+            self._update_api_key_status()
+
+            self.logger.debug("Core components initialized successfully")
+
+        except Exception as e:
+            self.logger.error(f"Failed to initialize components: {e}")
+            self.statusBar().showMessage(f"Component initialization failed: {e}")  # type: ignore
+
+    def _get_stored_api_key(self) -> Optional[str]:
+        """
+        Get stored API key securely.
+        
+        Returns:
+            API key string or None if not found
+        """
+        try:
+            if self.security_manager is None:
+                self.security_manager = SecurityManager()
+            return self.security_manager.retrieve_api_key()
+        except Exception as e:
+            self.logger.warning(f"Failed to retrieve API key: {e}")
+            return None
+
+    def _ensure_components_initialized(self) -> None:
+        """
+        Ensure all core components are initialized.
+        This should be called before performing operations that require all components.
+        """
+        if self.specs_collector is None or self.security_manager is None:
+            self._initialize_components()
+
+        if self.specs_collector is None:
+            self._initialize_components()
 
     def _setup_ui(self) -> None:
         """Setup the main user interface."""
@@ -580,7 +824,9 @@ class WinSayverMainWindow(QMainWindow):  # type: ignore
         title_font.setBold(True)
         title_label.setFont(title_font)
 
-        subtitle_label = QLabel("AI-Powered Windows Troubleshooting Assistant")  # type: ignore
+        # Clearer description of what the app does
+        subtitle_label = QLabel("AI-Powered Windows Troubleshooting Assistant\n"
+                             "Analyzes error screenshots and provides solutions")  # type: ignore
         subtitle_font = QFont()  # type: ignore
         subtitle_font.setPointSize(9)  # Smaller subtitle for better fit
         subtitle_label.setFont(subtitle_font)

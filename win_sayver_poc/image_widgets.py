@@ -28,6 +28,7 @@ if TYPE_CHECKING:
         QMessageBox,
         QPushButton,
         QScrollArea,
+        QSizePolicy,
         QVBoxLayout,
         QWidget,
     )
@@ -50,6 +51,7 @@ try:
         QMessageBox,
         QPushButton,
         QScrollArea,
+        QSizePolicy,
         QVBoxLayout,
         QWidget,
     )
@@ -96,7 +98,10 @@ class ImageThumbnail(QFrame):  # type: ignore
     def _setup_ui(self) -> None:
         """Setup thumbnail UI."""
         self.setFrameStyle(QFrame.Shape.StyledPanel)  # type: ignore
-        self.setFixedSize(180, 200)
+        # Make thumbnail responsive
+        self.setMinimumSize(150, 180)
+        self.setMaximumSize(200, 220)
+        self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)  # type: ignore
 
         # Main vertical layout
         layout = QVBoxLayout(self)  # type: ignore
@@ -264,7 +269,8 @@ class MultiImageDropArea(QWidget):  # type: ignore
         # Thumbnail gallery
         self.gallery_scroll = QScrollArea()  # type: ignore
         self.gallery_scroll.setWidgetResizable(True)
-        self.gallery_scroll.setMinimumHeight(200)
+        self.gallery_scroll.setMinimumHeight(150)  # Reduced minimum height for better responsiveness
+        self.gallery_scroll.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)  # type: ignore
 
         self.gallery_widget = QWidget()  # type: ignore
         self.gallery_layout = QGridLayout(self.gallery_widget)  # type: ignore
@@ -534,11 +540,22 @@ class MultiImageDropArea(QWidget):  # type: ignore
             if child:
                 child.setParent(None)  # type: ignore[arg-type]
 
-        # Add thumbnails in grid layout
+        # Add thumbnails in responsive grid layout
         if self.thumbnail_widgets:
+            # Calculate number of columns based on available width
+            available_width = 800  # Default width
+            if hasattr(self, 'gallery_scroll') and self.gallery_scroll and hasattr(self.gallery_scroll, 'viewport'):
+                viewport = self.gallery_scroll.viewport()
+                if viewport:
+                    available_width = viewport.width()
+            thumbnail_width = 180  # Fixed width of thumbnails
+            spacing = 15  # Spacing between thumbnails
+            margins = 20  # Left and right margins
+            
+            # Calculate maximum number of columns that fit
+            max_cols = max(1, min(6, (available_width - margins) // (thumbnail_width + spacing)))
+            
             row, col = 0, 0
-            max_cols = 4  # Maximum thumbnails per row
-
             for thumbnail in self.thumbnail_widgets.values():
                 self.gallery_layout.addWidget(thumbnail, row, col)
                 col += 1

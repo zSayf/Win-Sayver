@@ -207,38 +207,83 @@ class APIKeyWidget(QWidget):
         """Setup API key widget UI."""
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(8)
 
-        # API Key input
+        # API Key input with improved styling
         key_layout = QHBoxLayout()
+        key_layout.setSpacing(8)
 
         self.api_key_edit = QLineEdit()
         self.api_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
         self.api_key_edit.setPlaceholderText("Enter your Google Gemini API key")
+        self.api_key_edit.setMinimumHeight(32)
         self.api_key_edit.textChanged.connect(self._on_key_changed)
         key_layout.addWidget(self.api_key_edit)
 
-        # Show/Hide toggle
-        self.show_key_btn = QPushButton("👁")
-        self.show_key_btn.setMaximumWidth(30)
+        # Show/Hide toggle with improved styling
+        self.show_key_btn = QPushButton("👁 Show")
+        self.show_key_btn.setMaximumWidth(80)
+        self.show_key_btn.setMinimumHeight(32)
         self.show_key_btn.setCheckable(True)
         self.show_key_btn.setToolTip("Show/Hide API key")
+        self.show_key_btn.setStyleSheet(
+            """
+            QPushButton {
+                font-size: 12px;
+                font-weight: normal;
+                border: 1px solid #cccccc;
+                border-radius: 4px;
+                background-color: #f0f0f0;
+                color: #333333;
+                padding: 4px 8px;
+            }
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+            QPushButton:checked {
+                background-color: #2196F3;
+                color: white;
+                border: 1px solid #1976D2;
+            }
+        """
+        )
         self.show_key_btn.toggled.connect(self._toggle_key_visibility)
         key_layout.addWidget(self.show_key_btn)
 
         layout.addLayout(key_layout)
 
-        # Status
+        # Status with improved styling
         info_layout = QHBoxLayout()
+        info_layout.setSpacing(8)
 
         self.status_label = QLabel("No API key configured")
-        self.status_label.setStyleSheet("color: #ff6b6b; font-size: 11px;")
+        self.status_label.setStyleSheet("color: #ff6b6b; font-size: 12px; font-weight: 500;")
         info_layout.addWidget(self.status_label)
 
         info_layout.addStretch()
 
-        # Get API key link
-        get_key_btn = QPushButton("Get API Key")
-        get_key_btn.setStyleSheet("color: #2196F3; border: none; text-decoration: underline;")
+        # Get API key link with improved styling
+        get_key_btn = QPushButton("🔑 Get API Key")
+        get_key_btn.setStyleSheet(
+            """
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 6px 12px;
+                font-size: 12px;
+                font-weight: 500;
+                min-height: 28px;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+            QPushButton:pressed {
+                background-color: #3d8b40;
+            }
+        """
+        )
         get_key_btn.clicked.connect(self._open_api_key_page)
         info_layout.addWidget(get_key_btn)
 
@@ -248,10 +293,10 @@ class APIKeyWidget(QWidget):
         """Handle API key change."""
         if key.strip():
             self.status_label.setText("✅ API key configured")
-            self.status_label.setStyleSheet("color: #4caf50; font-size: 11px;")
+            self.status_label.setStyleSheet("color: #4caf50; font-size: 12px; font-weight: 500;")
         else:
             self.status_label.setText("No API key configured")
-            self.status_label.setStyleSheet("color: #ff6b6b; font-size: 11px;")
+            self.status_label.setStyleSheet("color: #ff6b6b; font-size: 12px; font-weight: 500;")
 
         self.api_key_changed.emit(key)
         self._save_api_key(key)
@@ -260,10 +305,42 @@ class APIKeyWidget(QWidget):
         """Toggle API key visibility."""
         if show:
             self.api_key_edit.setEchoMode(QLineEdit.EchoMode.Normal)
-            self.show_key_btn.setText("🙈")
+            self.show_key_btn.setText("🙈 Hide")
+            self.show_key_btn.setStyleSheet(
+                """
+                QPushButton {
+                    font-size: 12px;
+                    font-weight: normal;
+                    border: 1px solid #1976D2;
+                    border-radius: 4px;
+                    background-color: #2196F3;
+                    color: white;
+                    padding: 4px 8px;
+                }
+                QPushButton:hover {
+                    background-color: #1976D2;
+                }
+            """
+            )
         else:
             self.api_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
-            self.show_key_btn.setText("👁")
+            self.show_key_btn.setText("👁 Show")
+            self.show_key_btn.setStyleSheet(
+                """
+                QPushButton {
+                    font-size: 12px;
+                    font-weight: normal;
+                    border: 1px solid #cccccc;
+                    border-radius: 4px;
+                    background-color: #f0f0f0;
+                    color: #333333;
+                    padding: 4px 8px;
+                }
+                QPushButton:hover {
+                    background-color: #e0e0e0;
+                }
+            """
+            )
 
     def _open_api_key_page(self) -> None:
         """Open Google AI Studio page for API key."""
@@ -373,30 +450,106 @@ class AIConfigurationPanel(QWidget):
     def _setup_ui(self) -> None:
         """Setup configuration panel UI."""
         layout = QVBoxLayout(self)
+        layout.setSpacing(20)  # Increase spacing between main sections
+        layout.setContentsMargins(20, 20, 20, 20)  # Add margins around the panel
 
-        # Header
+        # Header with improved styling
         header_label = QLabel("🤖 AI Configuration")
         header_font = QFont()
-        header_font.setPointSize(14)
+        header_font.setPointSize(18)
         header_font.setBold(True)
         header_label.setFont(header_font)
+        header_label.setStyleSheet("margin-bottom: 15px; color: #2196F3; padding: 10px;")
+        header_label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # type: ignore
         layout.addWidget(header_label)
 
-        # API Key section
+        # API Key section with improved styling
         api_group = QGroupBox("🔑 API Key Configuration")
+        api_group.setStyleSheet(
+            """
+            QGroupBox {
+                font-weight: bold;
+                border: 2px solid #E0E0E0;
+                border-radius: 10px;
+                margin-top: 1ex;
+                padding-top: 20px;
+                background-color: #FFFFFF;
+                font-size: 14px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 15px;
+                padding: 0 10px 0 10px;
+                color: #2196F3;
+                font-size: 16px;
+            }
+            """
+        )
         api_layout = QVBoxLayout(api_group)
+        api_layout.setSpacing(15)
+        api_layout.setContentsMargins(15, 15, 15, 15)
 
         self.api_key_widget = APIKeyWidget()
         api_layout.addWidget(self.api_key_widget)
 
         layout.addWidget(api_group)
 
-        # Model Configuration
+        # Model Configuration with improved styling
         model_group = QGroupBox("🧠 Model Configuration")
+        model_group.setStyleSheet(
+            """
+            QGroupBox {
+                font-weight: bold;
+                border: 2px solid #E0E0E0;
+                border-radius: 10px;
+                margin-top: 1ex;
+                padding-top: 20px;
+                background-color: #FFFFFF;
+                font-size: 14px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 15px;
+                padding: 0 10px 0 10px;
+                color: #2196F3;
+                font-size: 16px;
+            }
+            """
+        )
         model_layout = QFormLayout(model_group)
+        model_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight)  # type: ignore
+        model_layout.setHorizontalSpacing(20)
+        model_layout.setVerticalSpacing(15)
+        model_layout.setContentsMargins(15, 15, 15, 15)
 
         # Model selection with dynamic availability checking
         self.model_combo = QComboBox()
+        self.model_combo.setMinimumHeight(36)  # Make combo boxes more accessible
+        self.model_combo.setStyleSheet(
+            """
+            QComboBox {
+                border: 2px solid #CCCCCC;
+                border-radius: 6px;
+                padding: 8px 12px;
+                background-color: white;
+                font-size: 14px;
+                min-width: 300px;
+            }
+            QComboBox:hover {
+                border-color: #2196F3;
+            }
+            QComboBox::drop-down {
+                border: none;
+                border-radius: 6px;
+            }
+            QComboBox QAbstractItemView {
+                border: 2px solid #CCCCCC;
+                selection-background-color: #2196F3;
+                selection-color: white;
+                border-radius: 6px;
+            }
+            """
+        )
 
         # Get available models dynamically
         available_models = self._get_available_models()
@@ -413,12 +566,12 @@ class AIConfigurationPanel(QWidget):
             """
             QLabel {
                 background-color: #f0f8ff;
-                border: 1px solid #d0e0f0;
-                border-radius: 4px;
-                padding: 8px;
-                font-size: 12px;
+                border: 2px solid #d0e0f0;
+                border-radius: 8px;
+                padding: 15px;
+                font-size: 13px;
                 color: #333;
-                margin: 4px;
+                margin: 5px;
             }
         """
         )
@@ -427,6 +580,32 @@ class AIConfigurationPanel(QWidget):
 
         # Thinking budget with official Google documentation ranges
         self.thinking_combo = QComboBox()
+        self.thinking_combo.setMinimumHeight(36)
+        self.thinking_combo.setStyleSheet(
+            """
+            QComboBox {
+                border: 2px solid #CCCCCC;
+                border-radius: 6px;
+                padding: 8px 12px;
+                background-color: white;
+                font-size: 14px;
+                min-width: 300px;
+            }
+            QComboBox:hover {
+                border-color: #2196F3;
+            }
+            QComboBox::drop-down {
+                border: none;
+                border-radius: 6px;
+            }
+            QComboBox QAbstractItemView {
+                border: 2px solid #CCCCCC;
+                selection-background-color: #2196F3;
+                selection-color: white;
+                border-radius: 6px;
+            }
+            """
+        )
         thinking_options = [
             ("-1", "DYNAMIC - Model decides when and how much to think (Recommended)"),
             ("4096", "HIGH - Deep reasoning (4096 tokens)"),
@@ -443,6 +622,32 @@ class AIConfigurationPanel(QWidget):
 
         # Performance mode
         self.performance_combo = QComboBox()
+        self.performance_combo.setMinimumHeight(36)
+        self.performance_combo.setStyleSheet(
+            """
+            QComboBox {
+                border: 2px solid #CCCCCC;
+                border-radius: 6px;
+                padding: 8px 12px;
+                background-color: white;
+                font-size: 14px;
+                min-width: 300px;
+            }
+            QComboBox:hover {
+                border-color: #2196F3;
+            }
+            QComboBox::drop-down {
+                border: none;
+                border-radius: 6px;
+            }
+            QComboBox QAbstractItemView {
+                border: 2px solid #CCCCCC;
+                selection-background-color: #2196F3;
+                selection-color: white;
+                border-radius: 6px;
+            }
+            """
+        )
         performance_modes = [
             ("balanced", "⚖️ Balanced - Good quality and speed"),
             ("quality", "🎯 Quality - Best analysis, slower"),
@@ -456,13 +661,59 @@ class AIConfigurationPanel(QWidget):
 
         layout.addWidget(model_group)
 
-        # Google Search Grounding Configuration
+        # Google Search Grounding Configuration with improved styling
         grounding_group = QGroupBox("🔍 Google Search Grounding")
+        grounding_group.setStyleSheet(
+            """
+            QGroupBox {
+                font-weight: bold;
+                border: 2px solid #E0E0E0;
+                border-radius: 10px;
+                margin-top: 1ex;
+                padding-top: 20px;
+                background-color: #FFFFFF;
+                font-size: 14px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 15px;
+                padding: 0 10px 0 10px;
+                color: #2196F3;
+                font-size: 16px;
+            }
+            """
+        )
         grounding_layout = QFormLayout(grounding_group)
+        grounding_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight)  # type: ignore
+        grounding_layout.setHorizontalSpacing(20)
+        grounding_layout.setVerticalSpacing(15)
+        grounding_layout.setContentsMargins(15, 15, 15, 15)
 
         # Enable grounding checkbox
         self.grounding_checkbox = QCheckBox("Enable real-time Google Search for AI analysis")
         self.grounding_checkbox.setChecked(True)
+        self.grounding_checkbox.setStyleSheet(
+            """
+            QCheckBox {
+                spacing: 10px;
+                font-size: 14px;
+            }
+            QCheckBox::indicator {
+                width: 20px;
+                height: 20px;
+            }
+            QCheckBox::indicator:unchecked {
+                border: 2px solid #cccccc;
+                border-radius: 4px;
+                background-color: white;
+            }
+            QCheckBox::indicator:checked {
+                border: 2px solid #2196F3;
+                border-radius: 4px;
+                background-color: #2196F3;
+            }
+            """
+        )
         self.grounding_checkbox.setToolTip(
             "When enabled, the AI can search the web in real-time to provide\n"
             "more accurate and up-to-date solutions based on current information."
@@ -471,7 +722,22 @@ class AIConfigurationPanel(QWidget):
 
         # URL Context input
         self.url_context_edit = QTextEdit()
-        self.url_context_edit.setMaximumHeight(80)
+        self.url_context_edit.setMaximumHeight(120)
+        self.url_context_edit.setMinimumHeight(100)
+        self.url_context_edit.setStyleSheet(
+            """
+            QTextEdit {
+                border: 2px solid #CCCCCC;
+                border-radius: 6px;
+                padding: 8px;
+                background-color: white;
+                font-size: 13px;
+            }
+            QTextEdit:focus {
+                border-color: #2196F3;
+            }
+            """
+        )
         self.url_context_edit.setPlaceholderText(
             "Optional: Enter specific URLs for context (one per line)\n"
             "Example:\n"
@@ -492,25 +758,71 @@ class AIConfigurationPanel(QWidget):
         grounding_info.setStyleSheet(
             "QLabel {"
             "    background-color: #f0f8ff;"
-            "    border: 1px solid #d0e0f0;"
-            "    border-radius: 4px;"
-            "    padding: 8px;"
-            "    font-size: 11px;"
+            "    border: 2px solid #d0e0f0;"
+            "    border-radius: 8px;"
+            "    padding: 15px;"
+            "    font-size: 12px;"
             "    color: #333;"
-            "    margin: 4px;"
+            "    margin: 5px;"
             "}"
         )
         grounding_layout.addRow("", grounding_info)
 
         layout.addWidget(grounding_group)
 
-        # Advanced Settings
+        # Advanced Settings with improved styling
         advanced_group = QGroupBox("⚙️ Advanced Settings")
+        advanced_group.setStyleSheet(
+            """
+            QGroupBox {
+                font-weight: bold;
+                border: 2px solid #E0E0E0;
+                border-radius: 10px;
+                margin-top: 1ex;
+                padding-top: 20px;
+                background-color: #FFFFFF;
+                font-size: 14px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 15px;
+                padding: 0 10px 0 10px;
+                color: #2196F3;
+                font-size: 16px;
+            }
+            """
+        )
         advanced_layout = QFormLayout(advanced_group)
+        advanced_layout.setLabelAlignment(Qt.AlignmentFlag.AlignRight)  # type: ignore
+        advanced_layout.setHorizontalSpacing(20)
+        advanced_layout.setVerticalSpacing(15)
+        advanced_layout.setContentsMargins(15, 15, 15, 15)
 
         # Streaming
         self.streaming_checkbox = QCheckBox("Enable streaming responses")
         self.streaming_checkbox.setChecked(True)
+        self.streaming_checkbox.setStyleSheet(
+            """
+            QCheckBox {
+                spacing: 10px;
+                font-size: 14px;
+            }
+            QCheckBox::indicator {
+                width: 20px;
+                height: 20px;
+            }
+            QCheckBox::indicator:unchecked {
+                border: 2px solid #cccccc;
+                border-radius: 4px;
+                background-color: white;
+            }
+            QCheckBox::indicator:checked {
+                border: 2px solid #2196F3;
+                border-radius: 4px;
+                background-color: #2196F3;
+            }
+            """
+        )
         advanced_layout.addRow("Streaming:", self.streaming_checkbox)
 
         # Timeout
@@ -518,23 +830,118 @@ class AIConfigurationPanel(QWidget):
         self.timeout_spin.setRange(10, 300)
         self.timeout_spin.setValue(60)
         self.timeout_spin.setSuffix(" seconds")
+        self.timeout_spin.setMinimumHeight(36)
+        self.timeout_spin.setStyleSheet(
+            """
+            QSpinBox {
+                border: 2px solid #CCCCCC;
+                border-radius: 6px;
+                padding: 8px;
+                background-color: white;
+                font-size: 14px;
+                min-width: 150px;
+            }
+            QSpinBox:focus {
+                border-color: #2196F3;
+            }
+            QSpinBox::up-button, QSpinBox::down-button {
+                border: none;
+                background-color: #f0f0f0;
+                width: 25px;
+            }
+            QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+                background-color: #e0e0e0;
+            }
+            """
+        )
         advanced_layout.addRow("Timeout:", self.timeout_spin)
 
         # Max retries
         self.retries_spin = QSpinBox()
         self.retries_spin.setRange(1, 10)
         self.retries_spin.setValue(3)
+        self.retries_spin.setMinimumHeight(36)
+        self.retries_spin.setStyleSheet(
+            """
+            QSpinBox {
+                border: 2px solid #CCCCCC;
+                border-radius: 6px;
+                padding: 8px;
+                background-color: white;
+                font-size: 14px;
+                min-width: 150px;
+            }
+            QSpinBox:focus {
+                border-color: #2196F3;
+            }
+            QSpinBox::up-button, QSpinBox::down-button {
+                border: none;
+                background-color: #f0f0f0;
+                width: 25px;
+            }
+            QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+                background-color: #e0e0e0;
+            }
+            """
+        )
         advanced_layout.addRow("Max Retries:", self.retries_spin)
 
         layout.addWidget(advanced_group)
 
-        # Connection Testing
+        # Connection Testing with improved styling
         test_group = QGroupBox("🔗 Connection Testing")
+        test_group.setStyleSheet(
+            """
+            QGroupBox {
+                font-weight: bold;
+                border: 2px solid #E0E0E0;
+                border-radius: 10px;
+                margin-top: 1ex;
+                padding-top: 20px;
+                background-color: #FFFFFF;
+                font-size: 14px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 15px;
+                padding: 0 10px 0 10px;
+                color: #2196F3;
+                font-size: 16px;
+            }
+            """
+        )
         test_layout = QVBoxLayout(test_group)
+        test_layout.setSpacing(15)
+        test_layout.setContentsMargins(15, 15, 15, 15)
 
         test_btn_layout = QHBoxLayout()
 
         self.test_connection_btn = QPushButton("🔍 Test Connection")
+        self.test_connection_btn.setMinimumHeight(40)
+        self.test_connection_btn.setStyleSheet(
+            """
+            QPushButton {
+                background-color: #2196F3;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 10px 20px;
+                font-size: 14px;
+                font-weight: 600;
+                min-width: 200px;
+            }
+            QPushButton:hover {
+                background-color: #1976D2;
+            }
+            QPushButton:pressed {
+                background-color: #1565C0;
+            }
+            QPushButton:disabled {
+                background-color: #cccccc;
+                color: #666666;
+            }
+            """
+        )
         self.test_connection_btn.clicked.connect(self._test_connection)
         test_btn_layout.addWidget(self.test_connection_btn)
 
@@ -545,26 +952,85 @@ class AIConfigurationPanel(QWidget):
         # Test progress
         self.test_progress = QProgressBar()
         self.test_progress.setVisible(False)
+        self.test_progress.setMinimumHeight(25)
+        self.test_progress.setStyleSheet(
+            """
+            QProgressBar {
+                border: 2px solid #CCCCCC;
+                border-radius: 6px;
+                text-align: center;
+                background-color: #f0f0f0;
+                height: 25px;
+            }
+            QProgressBar::chunk {
+                background-color: #4CAF50;
+                border-radius: 4px;
+            }
+            """
+        )
         test_layout.addWidget(self.test_progress)
 
         # Test result
         self.test_result_label = QLabel("Click 'Test Connection' to verify your AI configuration")
         self.test_result_label.setWordWrap(True)
-        self.test_result_label.setStyleSheet("color: #666666; margin: 5px;")
+        self.test_result_label.setStyleSheet("color: #666666; margin: 8px; padding: 8px; font-size: 13px;")
         test_layout.addWidget(self.test_result_label)
 
         layout.addWidget(test_group)
 
-        # Action buttons
+        # Action buttons with improved styling
         button_layout = QHBoxLayout()
+        button_layout.setSpacing(15)
 
         self.reset_btn = QPushButton("🔄 Reset to Defaults")
+        self.reset_btn.setMinimumHeight(40)
+        self.reset_btn.setStyleSheet(
+            """
+            QPushButton {
+                background-color: #FF9800;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 10px 20px;
+                font-size: 14px;
+                font-weight: 600;
+                min-width: 200px;
+            }
+            QPushButton:hover {
+                background-color: #e68a00;
+            }
+            QPushButton:pressed {
+                background-color: #cc7a00;
+            }
+        """
+        )
         self.reset_btn.clicked.connect(self._reset_to_defaults)
         button_layout.addWidget(self.reset_btn)
 
         button_layout.addStretch()
 
         self.save_btn = QPushButton("💾 Save Configuration")
+        self.save_btn.setMinimumHeight(40)
+        self.save_btn.setStyleSheet(
+            """
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 10px 20px;
+                font-size: 14px;
+                font-weight: 600;
+                min-width: 200px;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+            QPushButton:pressed {
+                background-color: #3d8b40;
+            }
+        """
+        )
         self.save_btn.clicked.connect(self._save_configuration)
         button_layout.addWidget(self.save_btn)
 
