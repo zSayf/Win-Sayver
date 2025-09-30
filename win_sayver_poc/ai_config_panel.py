@@ -14,14 +14,19 @@ from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
+# Add the missing imports
+from ai_client import AIClient
+from utils import PerformanceTimer
+
 try:
-    from PyQt6.QtCore import Qt, QThread
+    from PyQt6.QtCore import QObject, QEvent, Qt, QThread, QTimer
     from PyQt6.QtCore import pyqtSignal
     from PyQt6.QtCore import pyqtSignal as Signal
     from PyQt6.QtGui import QFont
     from PyQt6.QtWidgets import (
         QCheckBox,
         QComboBox,
+        QFontComboBox,
         QFormLayout,
         QFrame,
         QGroupBox,
@@ -42,13 +47,14 @@ except ImportError:
     PYQT6_AVAILABLE = False
     # Import stubs for type checking
     if TYPE_CHECKING:
-        from PyQt6.QtCore import Qt, QThread
+        from PyQt6.QtCore import QObject, QEvent, Qt, QThread, QTimer
         from PyQt6.QtCore import pyqtSignal
         from PyQt6.QtCore import pyqtSignal as Signal
         from PyQt6.QtGui import QFont
         from PyQt6.QtWidgets import (
             QCheckBox,
             QComboBox,
+            QFontComboBox,
             QFormLayout,
             QFrame,
             QGroupBox,
@@ -119,14 +125,36 @@ except ImportError:
         class Qt:
             pass
 
+        class QTimer:
+            def __init__(self):
+                self._timeout = Signal() if Signal else None
+            
+            def setSingleShot(self, single_shot):
+                pass
+                
+            def start(self, msec):
+                pass
+                
+            def stop(self):
+                pass
+                
+            @property
+            def timeout(self):
+                return self._timeout if self._timeout else Signal()
         def pyqtSignal(*args):
             return None
 
         Signal = pyqtSignal
 
-from ai_client import AIClient
-from utils import PerformanceTimer
+        class QObject:
+            pass
+            
+        class QEvent:
+            class Type:
+                Wheel = None
 
+        class QFontComboBox:
+            pass
 
 @dataclass
 class AIConfiguration:
@@ -147,6 +175,36 @@ class AIConfiguration:
     def __post_init__(self):
         """Initialize mutable default values."""
         pass  # field(default_factory=list) handles the list initialization
+
+
+class APIKeySaveWorker(QThread):
+    """Background worker for saving API key securely."""
+    
+    save_completed = pyqtSignal(bool, str)  # success, message
+
+    def __init__(self, api_key: str):
+        super().__init__()
+        self.api_key = api_key
+
+    def run(self) -> None:
+        """Save API key in background thread."""
+        try:
+            if self.api_key.strip():
+                # Import SecurityManager to save API key securely
+                from security_manager import SecurityManager
+                security_manager = SecurityManager()
+                
+                # Store API key using secure encryption
+                security_manager.store_api_key(self.api_key.strip())
+                self.save_completed.emit(True, "API key saved successfully")
+            else:
+                # Remove existing API key if input is empty
+                from security_manager import SecurityManager
+                security_manager = SecurityManager()
+                security_manager.remove_api_key()
+                self.save_completed.emit(True, "API key removed")
+        except Exception as e:
+            self.save_completed.emit(False, f"Failed to save API key: {str(e)}")
 
 
 class ConnectionTester(QThread):
@@ -200,6 +258,20 @@ class APIKeyWidget(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.save_worker = None
+        self.pending_save_key = None
+        self.save_timer = None
+        
+        # Only create timer if PYQT6 is available
+        try:
+            if PYQT6_AVAILABLE:
+                from PyQt6.QtCore import QTimer
+                self.save_timer = QTimer()
+                self.save_timer.setSingleShot(True)
+                self.save_timer.timeout.connect(self._perform_save)
+        except Exception:
+            self.save_timer = None
+            
         self._setup_ui()
         self._load_api_key()
 
@@ -218,6 +290,7 @@ class APIKeyWidget(QWidget):
         self.api_key_edit.setPlaceholderText("Enter your Google Gemini API key")
         self.api_key_edit.setMinimumHeight(32)
         self.api_key_edit.textChanged.connect(self._on_key_changed)
+        self.api_key_edit.editingFinished.connect(self._on_editing_finished)
         key_layout.addWidget(self.api_key_edit)
 
         # Show/Hide toggle with improved styling
@@ -290,7 +363,7 @@ class APIKeyWidget(QWidget):
         layout.addLayout(info_layout)
 
     def _on_key_changed(self, key: str) -> None:
-        """Handle API key change."""
+        """Handle API key change with debounced saving."""
         if key.strip():
             self.status_label.setText("✅ API key configured")
             self.status_label.setStyleSheet("color: #4caf50; font-size: 12px; font-weight: 500;")
@@ -299,7 +372,64 @@ class APIKeyWidget(QWidget):
             self.status_label.setStyleSheet("color: #ff6b6b; font-size: 12px; font-weight: 500;")
 
         self.api_key_changed.emit(key)
-        self._save_api_key(key)
+        
+        # Start debounced save timer (1 second delay) if available
+        try:
+            if hasattr(self, 'save_timer') and self.save_timer:
+                self.pending_save_key = key
+                self.save_timer.start(1000)  # Save after 1 second of no typing
+        except:
+            # If any error occurs, save immediately
+            self._perform_save()
+
+    def _on_editing_finished(self) -> None:
+        """Handle when user finishes editing (focus lost)."""
+        # Save immediately when focus is lost
+        try:
+            if hasattr(self, 'save_timer') and self.save_timer:
+                self.save_timer.stop()
+        except:
+            pass
+        self._perform_save()
+
+    def _perform_save(self) -> None:
+        """Perform the actual API key saving in background."""
+        try:
+            if hasattr(self, 'save_worker') and self.save_worker and hasattr(self.save_worker, 'isRunning') and self.save_worker.isRunning():
+                # If a save is already in progress, wait for it to finish
+                return
+        except:
+            pass
+            
+        # Get key value safely
+        key = ""
+        try:
+            if hasattr(self, 'pending_save_key') and self.pending_save_key is not None:
+                key = self.pending_save_key
+            elif hasattr(self, 'api_key_edit') and self.api_key_edit:
+                key = self.api_key_edit.text()
+        except:
+            pass
+        
+        # Start background save worker
+        try:
+            self.save_worker = APIKeySaveWorker(key)
+            self.save_worker.save_completed.connect(self._on_save_completed)
+            self.save_worker.start()
+        except:
+            # If worker fails, emit the signal directly
+            try:
+                if hasattr(self, 'api_key_edit') and self.api_key_edit:
+                    self.api_key_changed.emit(self.api_key_edit.text())
+            except:
+                pass
+
+    def _on_save_completed(self, success: bool, message: str) -> None:
+        """Handle completion of background API key save."""
+        if not success:
+            print(f"Warning: {message}")
+        # Emit the signal to notify that the configuration was saved
+        self.api_key_changed.emit(self.api_key_edit.text())
 
     def _toggle_key_visibility(self, show: bool) -> None:
         """Toggle API key visibility."""
@@ -348,43 +478,24 @@ class APIKeyWidget(QWidget):
 
         webbrowser.open("https://ai.google.dev/gemini-api")
 
-    def _save_api_key(self, key: str) -> None:
-        """Save API key securely."""
-        config_dir = Path.home() / ".winsayver"
-        config_dir.mkdir(exist_ok=True)
-
-        config_file = config_dir / "api_config.json"
-
-        try:
-            config = {}
-            if config_file.exists():
-                with open(config_file, "r") as f:
-                    config = json.load(f)
-
-            # Simple obfuscation (not secure encryption)
-            config["api_key"] = key[::-1] if key else ""  # Reverse string
-
-            with open(config_file, "w") as f:
-                json.dump(config, f)
-        except Exception:
-            pass
-
     def _load_api_key(self) -> None:
-        """Load saved API key."""
-        config_dir = Path.home() / ".winsayver"
-        config_file = config_dir / "api_config.json"
-
+        """Load saved API key from SecurityManager."""
         try:
-            if config_file.exists():
-                with open(config_file, "r") as f:
-                    config = json.load(f)
-
-                obfuscated_key = config.get("api_key", "")
-                if obfuscated_key:
-                    api_key = obfuscated_key[::-1]  # Reverse back
+            # Import SecurityManager to retrieve API key
+            from security_manager import SecurityManager
+            security_manager = SecurityManager()
+            
+            # Retrieve securely stored API key
+            if security_manager.has_api_key():
+                api_key = security_manager.retrieve_api_key()
+                if api_key:
                     self.api_key_edit.setText(api_key)
-        except Exception:
-            pass
+                    # Update status label
+                    self.status_label.setText("✅ API key configured")
+                    self.status_label.setStyleSheet("color: #4caf50; font-size: 12px; font-weight: 500;")
+        except Exception as e:
+            # Log error but don't crash the UI
+            print(f"Warning: Failed to load API key: {e}")
 
     def get_api_key(self) -> str:
         """Get current API key."""
@@ -395,12 +506,24 @@ class AIConfigurationPanel(QWidget):
     """Comprehensive AI configuration panel."""
 
     configuration_changed = pyqtSignal(object)  # AIConfiguration object
+    configuration_saved = pyqtSignal(str)  # API key string when configuration is saved
 
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.config = AIConfiguration()
         self.connection_tester = None
+        self.save_timer = None
+
+        # Create a timer for debounced saving
+        try:
+            if PYQT6_AVAILABLE:
+                from PyQt6.QtCore import QTimer
+                self.save_timer = QTimer()
+                self.save_timer.setSingleShot(True)
+                self.save_timer.timeout.connect(self._save_configuration)
+        except Exception:
+            self.save_timer = None
 
         self._setup_ui()
         self._setup_connections()
@@ -525,6 +648,7 @@ class AIConfigurationPanel(QWidget):
         # Model selection with dynamic availability checking
         self.model_combo = QComboBox()
         self.model_combo.setMinimumHeight(36)  # Make combo boxes more accessible
+        self.model_combo.setFocusPolicy(Qt.FocusPolicy.StrongFocus)  # Prevent wheel events when not focused
         self.model_combo.setStyleSheet(
             """
             QComboBox {
@@ -581,6 +705,7 @@ class AIConfigurationPanel(QWidget):
         # Thinking budget with official Google documentation ranges
         self.thinking_combo = QComboBox()
         self.thinking_combo.setMinimumHeight(36)
+        self.thinking_combo.setFocusPolicy(Qt.FocusPolicy.StrongFocus)  # Prevent wheel events when not focused
         self.thinking_combo.setStyleSheet(
             """
             QComboBox {
@@ -623,6 +748,7 @@ class AIConfigurationPanel(QWidget):
         # Performance mode
         self.performance_combo = QComboBox()
         self.performance_combo.setMinimumHeight(36)
+        self.performance_combo.setFocusPolicy(Qt.FocusPolicy.StrongFocus)  # Prevent wheel events when not focused
         self.performance_combo.setStyleSheet(
             """
             QComboBox {
@@ -1056,6 +1182,14 @@ class AIConfigurationPanel(QWidget):
         """Handle configuration change."""
         self._update_configuration()
         self.configuration_changed.emit(self.config)
+        
+        # Start debounced save (1.5 seconds delay)
+        try:
+            if hasattr(self, 'save_timer') and self.save_timer:
+                self.save_timer.start(1500)
+        except:
+            # If timer fails, save immediately
+            self._save_configuration()
 
     def _update_model_info(self) -> None:
         """Update model information display based on selected model."""
@@ -1207,6 +1341,13 @@ class AIConfigurationPanel(QWidget):
     def _save_configuration(self) -> None:
         """Save configuration to file."""
         try:
+            # Stop the timer if it's running
+            try:
+                if hasattr(self, 'save_timer') and self.save_timer and self.save_timer.isActive():
+                    self.save_timer.stop()
+            except:
+                pass
+                
             config_dir = Path.home() / ".winsayver"
             config_dir.mkdir(exist_ok=True)
 
@@ -1226,10 +1367,20 @@ class AIConfigurationPanel(QWidget):
             with open(config_file, "w") as f:
                 json.dump(config_data, f, indent=2)
 
-            QMessageBox.information(self, "Configuration Saved", "AI configuration has been saved successfully!")
+            # Emit signal when configuration is saved with the API key
+            if self.config.api_key:
+                self.configuration_saved.emit(self.config.api_key)
+            else:
+                self.configuration_saved.emit("")
+
+            # Show success message only in debug mode or for explicit saves
+            # For auto-saves, we don't show a message to avoid annoying the user
+            # QMessageBox.information(self, "Configuration Saved", "AI configuration has been saved successfully!")
 
         except Exception as e:
-            QMessageBox.critical(self, "Save Error", f"Failed to save configuration: {e}")
+            print(f"Warning: Failed to save configuration: {e}")
+            # Only show error for explicit saves, not auto-saves
+            # QMessageBox.critical(self, "Save Error", f"Failed to save configuration: {e}")
 
     def _load_configuration(self) -> None:
         """Load configuration from file."""
@@ -1254,8 +1405,9 @@ class AIConfigurationPanel(QWidget):
 
                 self._apply_configuration_to_ui()
 
-        except Exception:
-            pass  # Use defaults if loading fails
+        except Exception as e:
+            print(f"Warning: Failed to load configuration: {e}")
+            # Use defaults if loading fails
 
     def _apply_configuration_to_ui(self) -> None:
         """Apply configuration to UI elements."""

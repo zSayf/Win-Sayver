@@ -44,7 +44,7 @@ class SimpleThemeManager:
             settings: QSettings instance for persistent storage (optional)
         """
         self.settings = settings
-        self.current_theme = ThemeMode.SYSTEM
+        self.current_theme = ThemeMode.LIGHT  # Changed from ThemeMode.SYSTEM to make light mode default
 
         # Define theme stylesheets
         self._stylesheets = {ThemeMode.LIGHT: self._get_light_stylesheet(), ThemeMode.DARK: self._get_dark_stylesheet()}
@@ -360,8 +360,7 @@ class SimpleThemeManager:
     def _get_effective_theme(self) -> ThemeMode:
         """Get the effective theme (resolves system theme)."""
         if self.current_theme == ThemeMode.SYSTEM:
-            # For now, default to light theme
-            # TODO: Detect actual system theme preference
+            # Default to light theme instead of system theme
             return ThemeMode.LIGHT
         return self.current_theme
 

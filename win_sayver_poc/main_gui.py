@@ -99,6 +99,36 @@ from theme_manager import SettingsManager, ThemeMode
 from utils import ErrorHandler, PerformanceTimer, WinSayverError, safe_execute
 
 
+class ConnectionTestWorker(QThread):
+    """Background worker for testing AI connection."""
+    
+    test_completed = pyqtSignal(bool, str, dict)  # success, message, result_data
+
+    def __init__(self, api_key: str, model_name: str):
+        super().__init__()
+        self.api_key = api_key
+        self.model_name = model_name
+
+    def run(self) -> None:
+        """Test AI connection in background thread."""
+        try:
+            # Create AI client with test configuration
+            test_client = AIClient(api_key=self.api_key, model_name=self.model_name)
+
+            # Test connection
+            result = test_client.test_connection()
+
+            if result.get("success", False):
+                message = f"✅ Connection successful!\n\nModel: {self.model_name}\nResponse time: {result.get('response_time', 0.0):.2f}s"
+                self.test_completed.emit(True, message, result)
+            else:
+                error_msg = result.get("error", "Unknown error")
+                self.test_completed.emit(False, f"❌ Connection failed: {error_msg}", result)
+
+        except Exception as e:
+            self.test_completed.emit(False, f"❌ Test failed: {str(e)}", {})
+
+
 class CustomQTextBrowser(QTextBrowser):  # type: ignore
     """
     Custom QTextBrowser that prevents default URL loading for ms-settings URLs.
@@ -793,6 +823,7 @@ class WinSayverMainWindow(QMainWindow):  # type: ignore
             # AI Configuration Panel (replaces static labels)
             self.ai_config_panel = AIConfigurationPanel()
             self.ai_config_panel.configuration_changed.connect(self._on_ai_config_changed)
+            self.ai_config_panel.configuration_saved.connect(self._on_ai_config_saved)  # Connect new signal
             # Make AI config panel responsive
             self.ai_config_panel.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)  # type: ignore
             layout.addWidget(self.ai_config_panel)
@@ -820,6 +851,7 @@ class WinSayverMainWindow(QMainWindow):  # type: ignore
 
         # Theme selection dropdown
         self.theme_combo = QComboBox()  # type: ignore
+        self.theme_combo.setFocusPolicy(Qt.FocusPolicy.StrongFocus)  # Prevent wheel events when not focused
         self.theme_combo.addItem("💡 Light Theme", "light")
         self.theme_combo.addItem("🌙 Dark Theme", "dark")
         self.theme_combo.addItem("🖥️ System Default", "system")
@@ -911,7 +943,8 @@ class WinSayverMainWindow(QMainWindow):  # type: ignore
             # The configuration_changed signal is already connected in _create_settings_tab
             # Also connect for fallback model tracking
             self.ai_config_panel.configuration_changed.connect(self._on_ai_config_changed)
-            pass
+            # Connect the new configuration saved signal
+            self.ai_config_panel.configuration_saved.connect(self._on_ai_config_saved)
 
         # Connect theme combo if it exists
         if hasattr(self, "theme_combo"):
@@ -943,6 +976,35 @@ class WinSayverMainWindow(QMainWindow):  # type: ignore
 
         except Exception as e:
             self.logger.warning(f"Error handling AI config change: {e}")
+
+    def _on_ai_config_saved(self, api_key: str) -> None:
+        """Handle AI configuration saved event."""
+        try:
+            # Re-initialize AI client with new API key if it's not empty
+            if api_key:
+                self.ai_client = AIClient(api_key=api_key)
+                self.logger.info("AI client reinitialized with new API key from configuration panel")
+            else:
+                # If API key is empty, set ai_client to None
+                self.ai_client = None
+                self.logger.info("AI client removed due to empty API key")
+
+            # Update UI status
+            self._update_api_key_status()
+
+            # Update analysis ready state
+            self.update_analysis_ready_state()
+
+            # Show success message
+            self.statusBar().showMessage("AI configuration saved and validated successfully")  # type: ignore
+
+            self.logger.info("AI configuration saved and AI client updated")
+
+        except Exception as e:
+            self.logger.error(f"Failed to handle AI config save: {e}")
+            QMessageBox.critical(  # type: ignore
+                self, "Error", f"AI configuration saved but failed to initialize AI client: {str(e)}"
+            )
 
     def _on_exit(self) -> None:
         """Handle exit action from menu."""
@@ -999,6 +1061,41 @@ class WinSayverMainWindow(QMainWindow):  # type: ignore
 
         except Exception as e:
             self.logger.warning(f"Failed to load theme selection: {e}")
+
+    def _initialize_components(self) -> None:
+        """Initialize core Win Sayver components."""
+        try:
+            # Initialize security manager first
+            self.security_manager = SecurityManager()
+
+            # Initialize settings manager with theme support
+            from theme_manager import SettingsManager
+
+            self.settings_manager = SettingsManager()
+
+            # Initialize system data manager
+            self.system_data_manager = SystemDataManager()
+
+            # Initialize system specs collector
+            self.specs_collector = SystemSpecsCollector()
+
+            # Try to load existing system specs
+            self._load_existing_system_specs()
+
+            # Initialize prompt engineer
+            self.prompt_engineer = PromptEngineer()
+
+            # Initialize AI client if API key is available
+            self._initialize_ai_client()
+
+            # Update API key status in UI
+            self._update_api_key_status()
+
+            self.logger.debug("Core components initialized successfully")
+
+        except Exception as e:
+            self.logger.error(f"Failed to initialize components: {e}")
+            self.statusBar().showMessage(f"Component initialization failed: {e}")  # type: ignore
 
     def _load_settings(self) -> None:
         """Load application settings including theme and AI configuration."""
@@ -1087,41 +1184,6 @@ class WinSayverMainWindow(QMainWindow):  # type: ignore
 
         except Exception as e:
             self.logger.warning(f"Failed to save settings: {e}")
-
-    def _initialize_components(self) -> None:
-        """Initialize core Win Sayver components."""
-        try:
-            # Initialize security manager first
-            self.security_manager = SecurityManager()
-
-            # Initialize settings manager with theme support
-            from theme_manager import SettingsManager
-
-            self.settings_manager = SettingsManager()
-
-            # Initialize system data manager
-            self.system_data_manager = SystemDataManager()
-
-            # Initialize system specs collector
-            self.specs_collector = SystemSpecsCollector()
-
-            # Try to load existing system specs
-            self._load_existing_system_specs()
-
-            # Initialize prompt engineer
-            self.prompt_engineer = PromptEngineer()
-
-            # Initialize AI client if API key is available
-            self._initialize_ai_client()
-
-            # Update API key status in UI
-            self._update_api_key_status()
-
-            self.logger.debug("Core components initialized successfully")
-
-        except Exception as e:
-            self.logger.error(f"Failed to initialize components: {e}")
-            self.statusBar().showMessage(f"Component initialization failed: {e}")  # type: ignore
 
     def _on_images_added(self, file_paths: List[str]) -> None:
         """Handle images added to the drop area."""
@@ -1246,26 +1308,109 @@ class WinSayverMainWindow(QMainWindow):  # type: ignore
     def start_analysis(self) -> None:
         """Start AI-powered error analysis."""
         try:
+            # Check if AI client is initialized, if not try to initialize it
             if not self.ai_client:
-                QMessageBox.warning(
-                    self, "API Key Required", "Please set your Google Gemini API key in the Settings tab first."
-                )
-                self.tab_widget.setCurrentIndex(3)  # Switch to settings tab
-                return
+                # Try to get API key from SecurityManager first
+                api_key = None
+                if self.security_manager and self.security_manager.has_api_key():
+                    api_key = self.security_manager.retrieve_api_key()
+                
+                # If that fails, try to get it from the AI configuration panel
+                if not api_key and hasattr(self, "ai_config_panel"):
+                    config = self.ai_config_panel.get_configuration()
+                    api_key = config.api_key if config.api_key else None
+                
+                # If we have an API key, initialize the AI client
+                if api_key:
+                    self.ai_client = AIClient(api_key=api_key)
+                else:
+                    QMessageBox.warning(
+                        self, "API Key Required", "Please set your Google Gemini API key in the Settings tab first."
+                    )
+                    self.tab_widget.setCurrentIndex(3)  # Switch to settings tab
+                    return
 
             self.statusBar().showMessage("Starting AI analysis...")  # type: ignore
             self.analyze_btn.setEnabled(False)
             self.progress_bar.setVisible(True)
             self.progress_bar.setRange(0, 0)  # Indeterminate progress
-            self.progress_label.setText("Analyzing with AI...")
+            self.progress_label.setText("Testing AI connection...")
 
-            # Start real AI analysis workflow
-            self._start_real_ai_analysis()
+            # Test AI connection in background before starting analysis
+            self._test_ai_connection_before_analysis()
 
         except Exception as e:
             self.logger.error(f"Failed to start analysis: {e}")
             QMessageBox.critical(self, "Error", f"Failed to start analysis: {e}")  # type: ignore
             self._reset_analysis_ui()
+
+    def _test_ai_connection_before_analysis(self) -> None:
+        """Test AI connection in background before starting analysis."""
+        try:
+            # Get current configuration
+            if hasattr(self, "ai_config_panel"):
+                config = self.ai_config_panel.get_configuration()
+                api_key = config.api_key
+                model_name = config.model
+            else:
+                # Fallback to settings
+                settings = self.settings if self.settings else self.settings_manager.settings
+                api_key = settings.value("ai/api_key", "") if settings else ""
+                model_name = settings.value("ai/model", "gemini-2.5-flash") if settings else "gemini-2.5-flash"
+
+            if not api_key:
+                QMessageBox.warning(
+                    self, "API Key Required", "Please set your Google Gemini API key in the Settings tab first."
+                )
+                self.tab_widget.setCurrentIndex(3)  # Switch to settings tab
+                self._reset_analysis_ui()
+                return
+
+            # Start background connection test
+            self.connection_test_worker = ConnectionTestWorker(api_key, model_name)
+            self.connection_test_worker.test_completed.connect(self._on_connection_test_completed)
+            self.connection_test_worker.start()
+
+        except Exception as e:
+            self.logger.error(f"Failed to start connection test: {e}")
+            QMessageBox.critical(self, "Error", f"Failed to start connection test: {e}")  # type: ignore
+            self._reset_analysis_ui()
+
+    def _on_connection_test_completed(self, success: bool, message: str, result_data: dict) -> None:
+        """Handle completion of background AI connection test."""
+        try:
+            if success:
+                # Connection successful, start real AI analysis
+                self.progress_label.setText("Connection successful, starting analysis...")
+                self._start_real_ai_analysis()
+            else:
+                # Connection failed
+                self._reset_analysis_ui()
+                error_type = result_data.get("error_type", "unknown")
+                
+                if error_type == "invalid_api_key":
+                    QMessageBox.critical(
+                        self, 
+                        "Invalid API Key", 
+                        "The API key you provided is invalid. Please check your API key and try again."
+                    )
+                    self.tab_widget.setCurrentIndex(3)  # Switch to settings tab
+                elif error_type == "quota_exceeded":
+                    QMessageBox.critical(
+                        self, 
+                        "Quota Exceeded", 
+                        "Your API quota has been exceeded. Please wait for quota reset or get a new API key."
+                    )
+                else:
+                    QMessageBox.critical(
+                        self, 
+                        "Connection Failed", 
+                        f"Failed to connect to the AI service:\n\n{message}"
+                    )
+        except Exception as e:
+            self.logger.error(f"Error handling connection test completion: {e}")
+            self._reset_analysis_ui()
+            QMessageBox.critical(self, "Error", f"Error handling connection test: {e}")
 
     def _start_real_ai_analysis(self) -> None:
         """Start real AI analysis using the AI workflow system with enhanced fallback mechanisms."""
@@ -2028,17 +2173,20 @@ Raw result available - check application logs for details.
     def _initialize_ai_client(self) -> None:
         """Initialize AI client if API key is available."""
         try:
-            if not self.security_manager:
-                return
-
-            if self.security_manager.has_api_key():
+            # Try to get API key from SecurityManager first
+            api_key = None
+            if self.security_manager and self.security_manager.has_api_key():
                 api_key = self.security_manager.retrieve_api_key()
-                if api_key:
-                    # Initialize with quota-efficient default model
-                    self.ai_client = AIClient(api_key=api_key, model_name="gemini-2.5-flash")
-                    self.logger.info("AI client initialized with stored API key")
-                else:
-                    self.logger.warning("API key marked as available but could not retrieve")
+            
+            # If that fails, try to get it from the AI configuration panel
+            if not api_key and hasattr(self, "ai_config_panel"):
+                config = self.ai_config_panel.get_configuration()
+                api_key = config.api_key if config.api_key else None
+
+            if api_key:
+                # Initialize with quota-efficient default model
+                self.ai_client = AIClient(api_key=api_key, model_name="gemini-2.5-flash")
+                self.logger.info("AI client initialized with stored API key")
             else:
                 self.logger.debug("No API key available, AI client not initialized")
 
@@ -2051,9 +2199,22 @@ Raw result available - check application logs for details.
             if not self.security_manager:
                 return
 
+            # Check if API key is available from either SecurityManager or AI config panel
+            has_api_key = False
+            
+            # Check SecurityManager first
+            if self.security_manager.has_api_key():
+                has_api_key = True
+            
+            # If not found, check AI config panel
+            elif hasattr(self, "ai_config_panel"):
+                config = self.ai_config_panel.get_configuration()
+                if config.api_key:
+                    has_api_key = True
+
             # Only update if fallback UI elements exist (when AIConfigurationPanel is not available)
             if hasattr(self, "api_key_label") and hasattr(self, "set_api_key_btn"):
-                if self.security_manager.has_api_key():
+                if has_api_key:
                     self.api_key_label.setText("✅ Configured")
                     self.api_key_label.setStyleSheet("color: #28a745;")
                     self.set_api_key_btn.setText("Update API Key")

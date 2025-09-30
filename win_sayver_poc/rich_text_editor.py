@@ -191,6 +191,7 @@ class TemplateDialog(QDialog):
         category_layout.addWidget(QLabel("Category:"))
 
         self.category_combo = QComboBox()
+        self.category_combo.setFocusPolicy(Qt.FocusPolicy.StrongFocus)  # Prevent wheel events when not focused
         self.category_combo.addItem("All Categories")
         self.category_combo.addItems(self.template_manager.get_categories())
         self.category_combo.currentTextChanged.connect(self._filter_templates)
@@ -363,6 +364,7 @@ class RichTextEditor(QWidget):
 
         # Font family
         self.font_combo = QFontComboBox()
+        self.font_combo.setFocusPolicy(Qt.FocusPolicy.StrongFocus)  # Prevent wheel events when not focused
         self.font_combo.setCurrentFont(QFont("Segoe UI"))
         self.font_combo.setMaximumWidth(150)
         self.font_combo.setToolTip("Font family")
