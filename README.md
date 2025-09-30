@@ -108,10 +108,6 @@ run_win_sayver.bat
    # Recommended: Use the pre-built executable from releases
    # Or run the batch file for source installation:
    run_win_sayver.bat
-   
-   # Alternative: Direct Python execution
-   cd win_sayver_poc
-   python main_gui.py
    ```
 
 2. **🔑 Configure API key**
@@ -238,7 +234,7 @@ We love contributions! Win Sayver follows professional open-source development p
 - Explain use cases and expected benefits
 
 ### 🔧 **Development Setup**
-``bash
+```bash
 # Clone and setup development environment
 git clone https://github.com/zSayf/Win-Sayver.git
 cd win-sayver
@@ -254,7 +250,10 @@ pip install -e .[dev]
 # Run tests
 pytest
 
-# Start development
+# Start development using the batch file (recommended)
+run_win_sayver.bat
+
+# Or direct Python execution
 python win_sayver_poc/main_gui.py
 ```
 
