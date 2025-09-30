@@ -77,12 +77,18 @@ Win Sayver is a **production-ready, AI-powered Windows troubleshooting assistant
 ### 📋 Prerequisites
 
 - **Windows 10** (build 1903+) or **Windows 11**
-- **Python 3.8+** ([Download here](https://www.python.org/downloads/))
 - **Google Gemini API Key** ([Get free key](https://ai.google.dev/gemini-api))
 
 ### ⚡ Installation Methods
 
-#### **Method : From Source**
+#### **Method 1: Pre-built Executable (Recommended)**
+- Download the latest `WinSayver.exe` file from the [Releases](https://github.com/zSayf/Win-Sayver/releases) page
+- **Note**: The EXE file may appear as an unauthorized application in some antivirus software due to it being a self-compiled executable. This is normal for Python applications compiled into executables.
+- **Security**: The application has been scanned and verified with [VirusTotal](https://www.virustotal.com/gui/file/21993db0c5d365b5e2aeb4025d7145697e991e70ae0a6294794b5910da7190f2?nocache=1) - 67/69 security vendors report it as safe (2 false positives from Bkav Pro and McAfee Scanner)
+- Simply run the EXE file to start the application
+- No Python installation required
+
+#### **Method 2: From Source**
 ```bash
 # Clone the repository
 git clone https://github.com/zSayf/Win-Sayver.git
@@ -91,16 +97,21 @@ cd win-sayver
 # Install dependencies
 pip install -r win_sayver_poc/requirements.txt
 
-# Run the application
-cd win_sayver_poc
-python main_gui.py
+# Run the application using the batch file
+run_win_sayver.bat
 ```
 
 ### 🎮 First Run Guide
 
 1. **🚀 Start the application**
    ```bash
-   python win_sayver_poc/main_gui.py
+   # Recommended: Use the pre-built executable from releases
+   # Or run the batch file for source installation:
+   run_win_sayver.bat
+   
+   # Alternative: Direct Python execution
+   cd win_sayver_poc
+   python main_gui.py
    ```
 
 2. **🔑 Configure API key**
@@ -138,7 +149,7 @@ python main_gui.py
 ```
 
 ### Example 3: Performance Issues
-```python
+``python
 # System specs analysis reveals bottlenecks
 # AI provides optimization recommendations
 # Monitor improvements with built-in metrics
@@ -227,7 +238,7 @@ We love contributions! Win Sayver follows professional open-source development p
 - Explain use cases and expected benefits
 
 ### 🔧 **Development Setup**
-```bash
+``bash
 # Clone and setup development environment
 git clone https://github.com/zSayf/Win-Sayver.git
 cd win-sayver
