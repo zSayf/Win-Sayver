@@ -582,9 +582,20 @@ class AIConfigurationPanel(QWidget):
         header_font.setPointSize(18)
         header_font.setBold(True)
         header_label.setFont(header_font)
-        header_label.setStyleSheet("margin-bottom: 15px; color: #2196F3; padding: 10px;")
+        header_label.setStyleSheet("margin-bottom: 5px; color: #2196F3; padding: 10px;")
         header_label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # type: ignore
         layout.addWidget(header_label)
+        
+        # Add credit label with clickable links and logos
+        credit_label = QLabel()
+        credit_label.setText("Developed by Seif Elsayed - <a href=\"https://github.com/zSayf\" style=\"color: black; font-weight: bold;\">🔗 GitHub</a> | <a href=\"https://www.linkedin.com/in/seif-elsayed\" style=\"color: black; font-weight: bold;\">💼 LinkedIn</a>")
+        credit_label.setOpenExternalLinks(True)
+        credit_font = QFont()
+        credit_font.setPointSize(10)
+        credit_label.setFont(credit_font)
+        credit_label.setStyleSheet("margin-bottom: 15px; color: #666666; padding: 5px; font-style: italic;")
+        credit_label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # type: ignore
+        layout.addWidget(credit_label)
 
         # API Key section with improved styling
         api_group = QGroupBox("🔑 API Key Configuration")
